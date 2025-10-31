@@ -49,6 +49,11 @@ const theme = createTheme({
           },
         },
       },
+      defaultProps: {
+        size: 'large',
+        color: "primary",
+        variant: "contained"
+      }
     },
     MuiTextField: {
       styleOverrides: {
@@ -58,12 +63,21 @@ const theme = createTheme({
           },
         },
       },
+      defaultProps: {
+        variant: "outlined"
+      }
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          padding: "32px",
+          maxWidth: "400px",
+          width: "100%",
+          borderRadius: "16px"
         },
+      },
+      defaultProps: {
+        elevation: 3,
       },
     },
   },

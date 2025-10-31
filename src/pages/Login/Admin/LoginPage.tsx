@@ -1,8 +1,10 @@
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
   const [secretKey, setSecretKey] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -10,25 +12,14 @@ export function LoginPage() {
     console.log("Ключ:", secretKey);
   };
 
+  const toLogin = () => {
+    navigate("/login")
+  }
+
   return (
-    <Box
-      sx={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          width: "100%",
-          maxWidth: 400,
-          borderRadius: 2,
-        }}
-      >
-        <Typography variant="h5" component="h1" textAlign="center" mb={3}>
+    <Box>
+      <Paper>
+        <Typography variant="h5" component="h1" textAlign="center" mb={2}>
           Вход в систему
         </Typography>
 
@@ -41,20 +32,20 @@ export function LoginPage() {
           <TextField
             label="Ключ администратора"
             type="password"
-            variant="outlined"
             fullWidth
             value={secretKey}
             onChange={(e) => setSecretKey(e.target.value)}
           />
 
+          <Button type="submit">
+            Войти
+          </Button>
+
           <Button
             type="submit"
-            variant="contained"
-            color="primary"
-            size="large"
-            sx={{ mt: 2 }}
+            onClick={toLogin}
           >
-            Войти
+            Я - Сотрудник
           </Button>
         </Box>
       </Paper>

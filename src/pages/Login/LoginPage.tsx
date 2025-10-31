@@ -1,9 +1,11 @@
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -12,25 +14,14 @@ export function LoginPage() {
     console.log("Пароль:", password);
   };
 
+  const toAdminLogin = () => {
+    navigate("/admin/login")
+  }
+
   return (
-    <Box
-      sx={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          width: "100%",
-          maxWidth: 400,
-          borderRadius: 2,
-        }}
-      >
-        <Typography variant="h5" component="h1" textAlign="center" mb={3}>
+    <Box>
+      <Paper>
+        <Typography variant="h5" component="h1" textAlign="center" mb={2}>
           Вход в систему
         </Typography>
 
@@ -41,7 +32,6 @@ export function LoginPage() {
         >
           <TextField
             label="Логин"
-            variant="outlined"
             fullWidth
             value={login}
             onChange={(e) => setLogin(e.target.value)}
@@ -50,20 +40,20 @@ export function LoginPage() {
           <TextField
             label="Пароль"
             type="password"
-            variant="outlined"
             fullWidth
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          <Button type="submit">
+            Войти
+          </Button>
+
           <Button
             type="submit"
-            variant="contained"
-            color="primary"
-            size="large"
-            sx={{ mt: 2 }}
+            onClick={toAdminLogin}
           >
-            Войти
+            Я - Администратор
           </Button>
         </Box>
       </Paper>
