@@ -73,11 +73,24 @@ const theme = createTheme({
           padding: "32px",
           maxWidth: "400px",
           width: "100%",
-          borderRadius: "16px"
+          borderRadius: "16px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          cursor: "pointer",
         },
       },
       defaultProps: {
         elevation: 3,
+      },
+    },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          fontSize: "64px", // стандартный размер иконок на Dashboard
+        },
       },
     },
   },
