@@ -38,6 +38,15 @@ const theme = createTheme({
   },
 
   components: {
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.875rem',
+          minHeight: 'auto',
+          padding: '8px 16px'
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -89,7 +98,7 @@ const theme = createTheme({
     MuiSvgIcon: {
       styleOverrides: {
         root: {
-          fontSize: "64px", // стандартный размер иконок на Dashboard
+          fontSize: "32px", // стандартный размер иконок на Dashboard
         },
       },
     },

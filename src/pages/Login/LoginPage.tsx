@@ -1,6 +1,7 @@
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import theme from "../../theme";
 
 export function LoginPage() {
   const [login, setLogin] = useState("");
@@ -16,6 +17,10 @@ export function LoginPage() {
 
   const toAdminLogin = () => {
     navigate("/admin/login")
+  }
+
+  const toBooking = () => {
+    navigate("/booking")
   }
 
   return (
@@ -54,6 +59,13 @@ export function LoginPage() {
             onClick={toAdminLogin}
           >
             Я - Администратор
+          </Button>
+          <Button
+            sx={{backgroundColor: theme.palette.secondary.light}}
+            type="submit"
+            onClick={toBooking}
+          >
+            Запись на услуги
           </Button>
         </Box>
       </Paper>
