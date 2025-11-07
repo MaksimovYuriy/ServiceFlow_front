@@ -102,6 +102,15 @@ const theme = createTheme({
         },
       },
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          maxWidth: "100%", // снимаем ограничение
+          borderRadius: 0,   // чтобы углы были прямыми
+          padding: 0,        // убираем лишние паддинги
+        },
+      },
+    }
   },
 });
 
