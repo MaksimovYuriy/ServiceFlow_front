@@ -2,22 +2,33 @@ import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../theme";
+import { useLogin } from "../../api/hooks/useLogin";
 
 export function LoginPage() {
-  const [login, setLogin] = useState("");
+  const [email, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const loginMutation = useLogin();
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Здесь позже добавим запрос к Rails API (через fetch/axios)
-    console.log("Логин:", login);
-    console.log("Пароль:", password);
-  };
+    
+    loginMutation.mutate(
+      { email, password },
+      {
+        onSuccess: (response) => {
+          const { token } = response.data.attributes;
 
-  const toAdminLogin = () => {
-    navigate("/admin/login")
-  }
+          localStorage.setItem("token", token);
+          navigate("/admin/dashboard");
+        },
+        onError: () => {
+          alert("Ошибка авторизации");
+        }
+      }
+    );
+  };
 
   const toBooking = () => {
     navigate("/booking")
@@ -36,9 +47,9 @@ export function LoginPage() {
           sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         >
           <TextField
-            label="Логин"
+            label="Почта"
             fullWidth
-            value={login}
+            value={email}
             onChange={(e) => setLogin(e.target.value)}
           />
 
@@ -54,12 +65,6 @@ export function LoginPage() {
             Войти
           </Button>
 
-          <Button
-            type="submit"
-            onClick={toAdminLogin}
-          >
-            Я - Администратор
-          </Button>
           <Button
             sx={{backgroundColor: theme.palette.secondary.light}}
             type="submit"
