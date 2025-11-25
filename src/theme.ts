@@ -79,9 +79,8 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
+          maxWidth: "100%",
           padding: "32px",
-          maxWidth: "400px",
-          width: "100%",
           borderRadius: "16px",
           display: "flex",
           flexDirection: "column",
