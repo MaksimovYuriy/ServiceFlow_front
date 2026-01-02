@@ -12,10 +12,10 @@ export interface AdminSection {
 }
 
 export const adminSections: AdminSection[] = [
-  { title: "Сотрудники", path: "/admin/employees", icon: <PeopleAltIcon /> },
-  { title: "Клиенты", path: "/admin/clients", icon: <PersonIcon /> },
-  { title: "Каталог услуг", path: "/admin/services", icon: <BuildIcon /> },
-  { title: "Склад", path: "/admin/inventory", icon: <InventoryIcon /> },
-  { title: "Аналитика", path: "/admin/analytics", icon: <BarChartIcon /> },
-  { title: "Программа бонусов", path: "/admin/bonuses", icon: <CardGiftcardIcon /> }
+  { title: "Сотрудники", path: "/admin/crm/users", icon: <PeopleAltIcon /> },
+  { title: "Клиенты", path: "/admin/crm/clients", icon: <PersonIcon /> },
+  { title: "Каталог услуг", path: "/admin/crm/services", icon: <BuildIcon /> },
+  { title: "Склад", path: "/admin/crm/materials", icon: <InventoryIcon /> },
+  { title: "Аналитика", path: "/admin/crm/atalytic", icon: <BarChartIcon /> },
+  { title: "Программа бонусов", path: "/admin/crm/bonuses", icon: <CardGiftcardIcon /> }
 ];

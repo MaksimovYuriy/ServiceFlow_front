@@ -20,7 +20,7 @@ export function LoginPage() {
         onSuccess: (response) => {
           const { token } = response.data.attributes;
 
-          localStorage.setItem("token", token);
+          sessionStorage.setItem("token", token);
           navigate("/admin/dashboard");
         },
         onError: () => {

@@ -1,66 +1,108 @@
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
-import { Box, Button, Paper } from "@mui/material"
+import { Box, Button, Paper } from "@mui/material";
 import Navbar from '../../components/Navbar';
+import type { CreateUserForm } from '../../components/dialogues/CreateUserDialog';
+import { useCallback, useState } from 'react';
+import CreateUserDialog from '../../components/dialogues/CreateUserDialog';
+import React from 'react';
+import { useUsers } from '../../api/hooks/useUsers';
+import { useCreateUser } from '../../api/hooks/useCreateUser';
+import { createUser, type User } from '../../api/users';
+import { useUpdateUser } from '../../api/hooks/useUpdateUser';
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', minWidth: 50, flex: 1 },
-  { field: 'firstName', headerName: 'First name', editable: true, minWidth: 250, flex: 1 },
-  { field: 'lastName', headerName: 'Last name', editable: true,  minWidth: 250, flex: 1 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    editable: true,
-    minWidth: 150,
-    flex: 1
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    editable: true,
-    minWidth: 400,
-    flex: 1,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
+  { field: 'id', headerName: 'ID', minWidth: 80, flex: 0.5 },
+  { field: 'email', headerName: 'Email', minWidth: 250, flex: 1, editable: true },
+  { field: 'phone', headerName: 'Телефон', minWidth: 180, flex: 1, editable: true },
+  { field: 'active', headerName: 'Активен', type: 'boolean', minWidth: 120, flex: 0.6, editable: true },
 ];
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
+const initialForm: CreateUserForm = {
+  email: "",
+  phone: "",
+  active: false,
+  password: "",
+  password_confirmation: "",
+};
 
-const paginationModel = { page: 0, pageSize: 10 };
+// Добавляем onRowUpdate в пропсы
+const UserDataGrid = React.memo(
+  ({ users, loading, onRowUpdate }: { users: any[]; loading: boolean; onRowUpdate: any }) => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', mt: 4 }}>
+      <Paper sx={{ maxWidth: "100%", width: "100%" }}>
+        <DataGrid
+          rows={users}
+          columns={columns}
+          processRowUpdate={onRowUpdate} // используем переданный колбэк
+          onProcessRowUpdateError={(err) => console.error(err)}
+          autoHeight
+        />
+      </Paper>
+    </Box>
+  )
+);
+UserDataGrid.displayName = 'UserDataGrid';
 
-export function UserPage(){
-    return(
-      <div>
-        <Navbar />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 8}}>
-          <Button variant="contained">Добавить пользователя</Button>
-        </Box>
-        <Box sx={{display: 'flex', flexDirection: 'column', mt: 4}}>
-            <Paper sx={{maxWidth: "100%", width: "100%"}}>
-                <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        initialState={{ pagination: { paginationModel } }}
-                        pageSizeOptions={[5, 10]}
-                        checkboxSelection
-                        sx={{ border: 0 }}
-                />
-            </Paper>
-        </Box>
-      </div>
-    )
-}
 
-export default UserPage
+const UserPage = () => {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<CreateUserForm>(initialForm);
+
+  const handleOpen = useCallback(() => setOpen(true), []);
+  const handleClose = useCallback(() => setOpen(false), []);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }, []);
+
+  // Используем хук для загрузки пользователей
+  const { data: users = [], isLoading } = useUsers();
+  const { mutate: createUser, isPending } = useCreateUser();
+  const { mutateAsync: updateUserMutate } = useUpdateUser();
+
+
+  const handleSubmit = useCallback(() => {
+    createUser(form);
+    setForm(initialForm);
+    setOpen(false);
+  }, [form, createUser]);
+
+  const handleRowUpdate = async (newRow: User, oldRow: User) => {
+    try {
+      await updateUserMutate(newRow);
+      return newRow;
+    } catch (error) {
+      console.error("Ошибка обновления:", error);
+      return oldRow;
+    }
+  };
+
+  return (
+    <div>
+      <Navbar />
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 8 }}>
+        <Button variant="contained" onClick={handleOpen}>Добавить пользователя</Button>
+      </Box>
+
+      <CreateUserDialog
+        open={open}
+        form={form}
+        onClose={handleClose}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+      />
+
+      <UserDataGrid
+        users={users}
+        loading={isLoading}
+        onRowUpdate={handleRowUpdate}
+      />
+    </div>
+  );
+};
+
+export default UserPage;

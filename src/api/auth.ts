@@ -22,7 +22,7 @@ export function loginRequest(payload: LoginAttributes) {
 }
 
 export function logout(navigate: NavigateFunction) {
-  localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
   sessionStorage.clear();
   navigate('/login')
 }

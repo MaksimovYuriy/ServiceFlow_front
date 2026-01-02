@@ -17,3 +17,12 @@ export interface JsonApiError {
 export interface JsonApiErrorResponse {
   errors: JsonApiError[];
 }
+
+export interface JsonApiArrayResponse<T> {
+  data: JsonApiResource<T>[];
+  meta?: {
+    stats?: {
+      total: { count: number };
+    }
+  };
+}
