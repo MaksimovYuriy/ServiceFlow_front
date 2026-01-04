@@ -3,7 +3,10 @@ import Navbar from "../../components/Navbar";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import React, { useCallback, useState } from "react";
 import CreateServiceDialog, { type CreateServiceForm } from "../../components/dialogues/CreateServiceDialog";
-import { createUser } from "../../api/users";
+import { useServices } from "../../api/hooks/services/useServices";
+import { useCreateService } from "../../api/hooks/services/useCreateService";
+import { useUpdateService } from "../../api/hooks/services/useUpdateService";
+import type { Service } from "../../api/services";
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', minWidth: 80, flex: 0.5 },
@@ -32,12 +35,9 @@ const ServiceDataGrid = React.memo(
 ServiceDataGrid.displayName = 'ServiceDataGrid';
 
 const ServicePage = () => {
-  const services: any[] = [];
-  const loading = false;
-  const handleRowUpdate = (newRow: any) => {
-    console.log('Row updated:', newRow);
-    return newRow;
-  };
+  const { data: services = [], isLoading } = useServices();
+  const { mutate: createService, isPending } = useCreateService();
+  const { mutateAsync: updateServiceMutate } = useUpdateService();
 
   const handleOpen = useCallback(() => setOpen(true), []);
   const handleClose = useCallback(() => setOpen(false), []);
@@ -60,6 +60,22 @@ const ServicePage = () => {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CreateServiceForm>(initialForm);
 
+  const handleSubmit = useCallback(() => {
+      createService(form);
+      setForm(initialForm);
+      setOpen(false);
+    }, [form, createService]);
+
+  const handleRowUpdate = async (newRow: Service, oldRow: Service) => {
+      try {
+        await updateServiceMutate(newRow);
+        return newRow;
+      } catch (error) {
+        console.error("Ошибка обновления:", error);
+        return oldRow;
+      }
+    };
+
   return (
     <div>
       <Navbar />
@@ -72,12 +88,12 @@ const ServicePage = () => {
         form={form}
         onClose={handleClose}
         onChange={handleChange}
-        onSubmit={() => {}}
+        onSubmit={handleSubmit}
       />
 
       <ServiceDataGrid
         services={services}
-        loading={loading}
+        loading={isLoading}
         onRowUpdate={handleRowUpdate}
       />
     </div>

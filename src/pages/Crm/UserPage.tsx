@@ -5,10 +5,10 @@ import type { CreateUserForm } from '../../components/dialogues/CreateUserDialog
 import { useCallback, useState } from 'react';
 import CreateUserDialog from '../../components/dialogues/CreateUserDialog';
 import React from 'react';
-import { useUsers } from '../../api/hooks/useUsers';
-import { useCreateUser } from '../../api/hooks/useCreateUser';
+import { useUsers } from '../../api/hooks/users/useUsers';
+import { useCreateUser } from '../../api/hooks/users/useCreateUser';
 import { createUser, type User } from '../../api/users';
-import { useUpdateUser } from '../../api/hooks/useUpdateUser';
+import { useUpdateUser } from '../../api/hooks/users/useUpdateUser';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', minWidth: 80, flex: 0.5 },
