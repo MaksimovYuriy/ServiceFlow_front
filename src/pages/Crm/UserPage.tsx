@@ -11,10 +11,10 @@ import { createUser, type User } from '../../api/users';
 import { useUpdateUser } from '../../api/hooks/users/useUpdateUser';
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', minWidth: 80, flex: 0.5 },
-  { field: 'email', headerName: 'Email', minWidth: 250, flex: 1, editable: true },
-  { field: 'phone', headerName: 'Телефон', minWidth: 180, flex: 1, editable: true },
-  { field: 'active', headerName: 'Активен', type: 'boolean', minWidth: 120, flex: 0.6, editable: true },
+  { field: 'id', headerName: 'ID', width: 80 },
+  { field: 'email', headerName: 'Email', flex: 1, editable: true },
+  { field: 'phone', headerName: 'Телефон', flex: 1, editable: true },
+  { field: 'active', headerName: 'Активен', type: 'boolean', width: 120, editable: true },
 ];
 
 const initialForm: CreateUserForm = {
@@ -35,7 +35,7 @@ const UserDataGrid = React.memo(
           columns={columns}
           processRowUpdate={onRowUpdate} // используем переданный колбэк
           onProcessRowUpdateError={(err) => console.error(err)}
-          autoHeight
+          sx={{ width: "100%" }}
         />
       </Paper>
     </Box>

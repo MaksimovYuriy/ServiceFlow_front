@@ -1,6 +1,6 @@
 import { useNavigate, type NavigateFunction } from "react-router-dom";
-import { api } from "./axios";
-import type { JsonApiResource, JsonApiResponse } from "./jsonapi";
+import { api } from "./middlewares/axios";
+import type { JsonApiResource, JsonApiResponse } from "./middlewares/jsonapi";
 import { QueryClient } from "@tanstack/react-query";
 
 export interface LoginAttributes {

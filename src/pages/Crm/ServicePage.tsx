@@ -9,11 +9,11 @@ import { useUpdateService } from "../../api/hooks/services/useUpdateService";
 import type { Service } from "../../api/services";
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', minWidth: 80, flex: 0.5 },
-  { field: 'title', headerName: 'Title', minWidth: 250, flex: 1, editable: true },
-  { field: 'description', headerName: 'Description', minWidth: 500, flex: 1, editable: true },
-  { field: 'duration', headerName: 'Duration', minWidth: 150, flex: 0.6, editable: true },
-  { field: 'price', headerName: 'Price', minWidth: 100, flex: 1, editable: true },
+  { field: 'id', headerName: 'ID', flex: 0.5 },
+  { field: 'title', headerName: 'Title', flex: 1, editable: true },
+  { field: 'description', headerName: 'Description', flex: 1, editable: true },
+  { field: 'duration', headerName: 'Duration', flex: 1, editable: true },
+  { field: 'price', headerName: 'Price', flex: 1, editable: true },
   { field: 'active', headerName: 'Active?', type: 'boolean', minWidth: 100, flex: 0.6, editable: true },
 ];
 
@@ -26,7 +26,7 @@ const ServiceDataGrid = React.memo(
           columns={columns}
           processRowUpdate={onRowUpdate}
           onProcessRowUpdateError={(err) => console.error(err)}
-          autoHeight
+          sx={{ width: "100%" }}
         />
       </Paper>
     </Box>

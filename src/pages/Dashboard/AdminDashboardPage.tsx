@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, Grid } from "@mui/material";
+import { Box, Paper, Typography, Grid, Toolbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { adminSections } from "../../config/adminSections";
 import Navbar from "../../components/Navbar";
@@ -9,12 +9,11 @@ export function AdminDashboardPage() {
   return (
     <div>
       <Navbar/>
-      <Box>
-        <Typography variant="h4" fontWeight={300} mb={4}>
-          Панель администратора
-        </Typography>
-
-        <Grid container spacing={4}>
+      <Toolbar/>
+      <Typography variant="h4" fontWeight={300} mb={4}>
+        Панель администратора
+      </Typography>
+      <Grid container spacing={4}>
           {adminSections.map((section) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={section.title}>
               <Paper
@@ -37,7 +36,6 @@ export function AdminDashboardPage() {
             </Grid>
           ))}
         </Grid>
-      </Box>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
-import { api } from "./axios";
-import { type JsonApiResponse, type JsonApiArrayResponse, type JsonApiResource } from "./jsonapi";
+import { api } from "./middlewares/axios";
+import { type JsonApiResponse, type JsonApiArrayResponse, type JsonApiResource } from "./middlewares/jsonapi";
 
 /* ===== TYPES ===== */
 

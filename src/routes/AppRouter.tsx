@@ -4,6 +4,7 @@ import AdminDashboardPage from "../pages/Dashboard/AdminDashboardPage";
 import BookingPage from "../pages/Booking/BookingPage";
 import UserPage from "../pages/Crm/UserPage";
 import ServicePage from "../pages/Crm/ServicePage";
+import MasterPage from "../pages/Crm/MasterPage";
 
 export function AppRouter() {
   return (
@@ -15,6 +16,7 @@ export function AppRouter() {
         <Route path="/booking" element={<BookingPage />}/>
         <Route path="/admin/crm/users" element={<UserPage />} />
         <Route path="/admin/crm/services" element={<ServicePage />} />
+        <Route path="/admin/crm/masters" element={<MasterPage />} />
       </Routes>
     </BrowserRouter>
   );
