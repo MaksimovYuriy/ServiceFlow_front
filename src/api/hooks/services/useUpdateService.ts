@@ -7,7 +7,7 @@ export function useUpdateService() {
   return useMutation<Service, Error, UpdateServicePayload>({
     mutationFn: updateService,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["services"] });
     },
   });
 }
