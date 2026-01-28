@@ -17,5 +17,6 @@ export const adminSections: AdminSection[] = [
   { title: "Каталог услуг", path: "/admin/crm/services", icon: <BuildIcon /> },
   { title: "Склад", path: "/admin/crm/materials", icon: <InventoryIcon /> },
   { title: "Настройка трат материалов", path: "/admin/crm/service_materials", icon: <InventoryIcon /> },
+  { title: "Назначение мастеров", path: "/admin/crm/service_masters", icon: <InventoryIcon /> },
   { title: "Аналитика", path: "/admin/crm/atalytic", icon: <BarChartIcon /> },
 ];

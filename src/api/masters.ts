@@ -11,6 +11,7 @@ export interface MasterResponseAttributes {
   phone: string;
   salary: number;
   active: boolean;
+  full_name: string
 }
 
 export type Master = {
@@ -58,6 +59,7 @@ export function fetchMasters() {
           phone: item.attributes.phone,
           salary: item.attributes.salary,
           active: item.attributes.active,
+          full_name: item.attributes.full_name
         })
       )
     );
@@ -92,6 +94,7 @@ export function createMaster(payload: CreateMasterPayload) {
       phone: item.attributes.phone,
       salary: item.attributes.salary,
       active: item.attributes.active,
+      full_name: item.attributes.full_name
     };
   });
 }
