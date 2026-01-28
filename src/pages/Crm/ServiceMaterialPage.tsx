@@ -16,26 +16,17 @@ import { DataGrid, type GridColDef, type GridRenderCellParams } from "@mui/x-dat
 import React, { useState, useCallback, useMemo } from "react";
 
 import CreateServiceMaterialDialog from "../../components/dialogues/CreateServiceMaterialDialog";
+
 import { useServiceMaterials } from "../../api/hooks/service_materials/useServiceMaterials";
 import { useCreateServiceMaterial } from "../../api/hooks/service_materials/useCreateServiceMaterial";
 import { useUpdateServiceMaterial } from "../../api/hooks/service_materials/useUpdateServiceMaterial";
 import { useDeleteServiceMaterial } from "../../api/hooks/service_materials/useDeleteServiceMaterial";
+
+import { useServices } from "../../api/hooks/services/useServices";
+import { useMaterials } from "../../api/hooks/materials/useMaterial";
+
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-
-// Пример сервисов и материалов (можно получать через API)
-const services = [
-  { id: 1, title: "Стрижка" },
-  { id: 2, title: "Окрашивание" },
-  { id: 3, title: "Маникюр" },
-];
-
-const materials = [
-  { id: 1, title: "Краска" },
-  { id: 2, title: "Перчатки" },
-  { id: 3, title: "Фольга" },
-  { id: 4, title: "Ножницы" },
-];
 
 // Типы
 type CreateServiceMaterialForm = {
@@ -64,15 +55,15 @@ const ServiceMaterialDataGrid = React.memo(
     onRowUpdate: (newRow: ServiceMaterialRow, oldRow: ServiceMaterialRow) => Promise<ServiceMaterialRow>;
   }) => (
     <Box sx={{ display: "flex", flexDirection: "column", mt: 2, width: "100%" }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          loading={loading}
-          processRowUpdate={onRowUpdate}
-          disableRowSelectionOnClick
-          autoHeight
-          sx={{ width: "100%" }}
-        />
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        loading={loading}
+        processRowUpdate={onRowUpdate}
+        disableRowSelectionOnClick
+        autoHeight
+        sx={{ width: "100%" }}
+      />
     </Box>
   )
 );
@@ -87,24 +78,48 @@ const ServiceMaterialPage = () => {
   const initialForm: CreateServiceMaterialForm = { material_id: "", required_quantity: 0 };
   const [form, setForm] = useState<CreateServiceMaterialForm>(initialForm);
 
-  // Хуки
+  // ===== API =====
+
+  const { data: servicesData = [], isLoading: servicesLoading } = useServices();
+  const { data: materialsData = [], isLoading: materialsLoading } = useMaterials();
+
   const { data: materialsList = [], isLoading } = useServiceMaterials(Number(selectedServiceId));
   const { mutate: createServiceMaterial } = useCreateServiceMaterial();
   const { mutateAsync: updateServiceMaterialMutate } = useUpdateServiceMaterial();
   const deleteMutation = useDeleteServiceMaterial(Number(selectedServiceId));
 
-  // Обработчики формы
+  // ===== Формирование справочников =====
+
+  const services = useMemo(
+    () =>
+      servicesData.map((s: any) => ({
+        id: Number(s.id),
+        title: s.title
+      })),
+    [servicesData]
+  );
+
+  const allMaterials = useMemo(
+    () =>
+      materialsData.map((m: any) => ({
+        id: Number(m.id),
+        title: m.title
+      })),
+    [materialsData]
+  );
+
+  // ===== Обработчики формы =====
+
   const handleFormChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === "required_quantity" ? Number(value) : Number(value),
+      [name]: Number(value),
     }));
   }, []);
 
   const handleSubmit = () => {
-    if (!selectedServiceId) return;
-    if (!form.material_id) return;
+    if (!selectedServiceId || !form.material_id || !form.required_quantity) return;
 
     createServiceMaterial({
       service_id: selectedServiceId,
@@ -116,66 +131,77 @@ const ServiceMaterialPage = () => {
     setDialogOpen(false);
   };
 
-  // Приведение данных для DataGrid
-  const rows: ServiceMaterialRow[] = useMemo(() => 
-    (materialsList || []).map((m: any) => ({
-      id: Number(m.id),
-      material_id: m.attributes?.material_id ?? 0,
-      required_quantity: m.attributes?.required_quantity ?? 0,
-      material_title: m.attributes?.material_title ?? "-",
-    })), 
+  // ===== Таблица =====
+
+  const rows: ServiceMaterialRow[] = useMemo(
+    () =>
+      (materialsList || []).map((m: any) => ({
+        id: Number(m.id),
+        material_id: m.attributes?.material_id ?? 0,
+        required_quantity: m.attributes?.required_quantity ?? 0,
+        material_title: m.attributes?.material_title ?? "-",
+      })),
     [materialsList]
   );
 
-  // Обновление строки
-  const handleRowUpdate = useCallback(async (newRow: ServiceMaterialRow, oldRow: ServiceMaterialRow) => {
-    try {
-      await updateServiceMaterialMutate({
-        id: newRow.id,
-        service_id: Number(selectedServiceId),
-        required_quantity: newRow.required_quantity,
-      });
-      return newRow;
-    } catch (error) {
-      console.error("Ошибка обновления:", error);
-      return oldRow;
-    }
-  }, [selectedServiceId, updateServiceMaterialMutate]);
+  const usedMaterialIds = useMemo(
+    () => rows.map(r => r.material_id),
+    [rows]
+  );
 
-  // Функция удаления
-  const handleDelete = useCallback((id: number) => {
-    deleteMutation.mutate(id);
-  }, [deleteMutation]);
+  const availableMaterials = useMemo(
+    () => allMaterials.filter(m => !usedMaterialIds.includes(m.id)),
+    [allMaterials, usedMaterialIds]
+  );
 
-  // Колонки DataGrid - исправленная типизация
-  const columns = useMemo(() => [
-    { 
-      field: "material_title", 
-      headerName: "Материал", 
-      flex: 1 
+  // ===== Обновление строки =====
+
+  const handleRowUpdate = useCallback(
+    async (newRow: ServiceMaterialRow, oldRow: ServiceMaterialRow) => {
+      try {
+        await updateServiceMaterialMutate({
+          id: newRow.id,
+          service_id: Number(selectedServiceId),
+          required_quantity: newRow.required_quantity,
+        });
+        return newRow;
+      } catch {
+        return oldRow;
+      }
+    },
+    [selectedServiceId, updateServiceMaterialMutate]
+  );
+
+  const handleDelete = useCallback(
+    (id: number) => {
+      deleteMutation.mutate(id);
+    },
+    [deleteMutation]
+  );
+
+  // ===== Колонки =====
+
+  const columns = useMemo<GridColDef[]>(() => [
+    {
+      field: "material_title",
+      headerName: "Материал",
+      flex: 1,
     },
     {
       field: "required_quantity",
       headerName: "Расход",
       flex: 1,
-      editable: true,
       renderCell: (params: GridRenderCellParams<ServiceMaterialRow>) => {
         const isEditing = editingRowId === params.row.id;
-        
+
         if (!isEditing) {
           return (
-            <Typography 
+            <Typography
               onClick={() => {
                 setEditingRowId(params.row.id);
                 setAmount(params.row.required_quantity);
               }}
-              sx={{ 
-                cursor: 'pointer',
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center'
-              }}
+              sx={{ cursor: "pointer" }}
             >
               {params.value}
             </Typography>
@@ -202,8 +228,6 @@ const ServiceMaterialPage = () => {
                     service_id: Number(selectedServiceId),
                     required_quantity: amount,
                   });
-                } catch (err) {
-                  console.error(err);
                 } finally {
                   setEditingRowId(null);
                   setAmount(1);
@@ -212,13 +236,7 @@ const ServiceMaterialPage = () => {
             >
               <CheckIcon />
             </IconButton>
-            <IconButton 
-              size="small" 
-              onClick={() => {
-                setEditingRowId(null);
-                setAmount(1);
-              }}
-            >
+            <IconButton size="small" onClick={() => setEditingRowId(null)}>
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -261,7 +279,9 @@ const ServiceMaterialPage = () => {
               <MenuItem value="">
                 <em>Выберите услугу</em>
               </MenuItem>
-              {services.map((service) => (
+              {servicesLoading ? (
+                <MenuItem disabled>Загрузка...</MenuItem>
+              ) : services.map((service) => (
                 <MenuItem key={service.id} value={service.id}>
                   {service.title}
                 </MenuItem>
@@ -278,6 +298,7 @@ const ServiceMaterialPage = () => {
               <Button
                 variant="contained"
                 onClick={() => setDialogOpen(true)}
+                disabled={materialsLoading}
               >
                 Добавить трату
               </Button>
@@ -296,11 +317,11 @@ const ServiceMaterialPage = () => {
           </Box>
         )}
 
-        {/* Модалка добавления */}
+        {/* Модалка */}
         <CreateServiceMaterialDialog
           open={dialogOpen}
           form={form}
-          materials={materials}
+          materials={availableMaterials}
           onClose={() => setDialogOpen(false)}
           onChange={handleFormChange}
           onSubmit={handleSubmit}

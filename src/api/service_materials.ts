@@ -31,7 +31,7 @@ export function fetchServiceMaterials(serviceId: number) {
 export function createServiceMaterial(payload: CreateServiceMaterialPayload) {
   return api
     .post<{ data: ServiceMaterial }>(
-      `/api/services/${payload.service_id}/service_materials`,
+      `/api/service_materials`,
       {
         data: {
           type: "service_materials",
