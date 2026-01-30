@@ -22,6 +22,7 @@ export type Master = {
   phone: string;
   salary: number;
   active: boolean;
+  full_name: string;
 };
 
 export interface CreateMasterPayload {
