@@ -66,6 +66,25 @@ export function fetchMasters() {
     );
 }
 
+export function fetchMastersByService(serviceId: number) {
+  return api
+    .get<JsonApiArrayResponse<MasterResponseAttributes>>(`/api/masters?filter[service_id]=${serviceId}`)
+    .then(response =>
+      response.data.data.map(
+        (item: JsonApiResource<MasterResponseAttributes>) => ({
+          id: Number(item.id),
+          first_name: item.attributes.first_name,
+          middle_name: item.attributes.middle_name,
+          last_name: item.attributes.last_name,
+          phone: item.attributes.phone,
+          salary: item.attributes.salary,
+          active: item.attributes.active,
+          full_name: item.attributes.full_name
+        })
+      )
+    );
+}
+
 /* ===== CREATE SERVICE ===== */
 
 export function createMaster(payload: CreateMasterPayload) {
