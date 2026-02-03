@@ -44,6 +44,11 @@ export interface UpdateMasterPayload {
   active: boolean;
 }
 
+export interface Slot {
+  start_time: string;
+  end_time: string;
+}
+
 
 /* ===== GET SERVICES ===== */
 
@@ -153,5 +158,19 @@ export function updateMaster(payload: UpdateMasterPayload) {
         active: item.attributes.active,
       };
     });
+}
+
+export function fetchAvailableDates(masterId: number) {
+  return api
+    .get<string[]>(`/api/masters/${masterId}/available_dates`)
+    .then(response => response.data);
+}
+
+export function fetchAvailableSlots(masterId: number, date: string) {
+  return api
+    .get<Slot[]>(`/api/masters/${masterId}/available_slots`, {
+      params: { date },
+    })
+    .then(response => response.data);
 }
 
