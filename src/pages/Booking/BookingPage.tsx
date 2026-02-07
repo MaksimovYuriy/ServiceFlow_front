@@ -1,4 +1,4 @@
-import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button, TextField } from "@mui/material";
+import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button, TextField, Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../theme";
@@ -11,6 +11,9 @@ import { useCreateNote } from "../../api/hooks/notes/useCreateNote";
 
 export function BookingPage() {
   const navigate = useNavigate();
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   // Выбор услуги и мастера
   const [selectedServiceId, setSelectedServiceId] = useState<number | "">("");
@@ -73,6 +76,8 @@ export function BookingPage() {
       },
       onError: (err) => {
         console.error("Ошибка при создании записи:", err);
+        setErrorMessage("Что-то пошло не так, услуга временно недоступна");
+        setOpenSnackbar(true);
       },
     });
   };
@@ -228,6 +233,22 @@ export function BookingPage() {
           </Box>
         )}
       </Paper>
+
+      {/* Snackbar с ошибкой */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
 
       {/* Кнопка входа */}
       <Button
