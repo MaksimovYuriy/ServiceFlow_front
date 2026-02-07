@@ -58,8 +58,8 @@ export function BookingPage() {
         phone: clientPhone,
         telegram: clientTelegram || null,
       },
-      start_at: new Date(`${selectedDate}T${selectedSlot.start_time}`).toISOString(),
-      end_at: new Date(`${selectedDate}T${selectedSlot.end_time}`).toISOString(),
+      start_at: `${selectedDate}T${selectedSlot.start_time}`,
+      end_at: `${selectedDate}T${selectedSlot.end_time}`
     };
 
     createNoteMutation.mutate(payload, {
