@@ -17,7 +17,11 @@ export interface CreateNotePayload {
   service_id: number;
   start_at: string;
   end_at: string;
-  client_id: number;
+  client: {
+    full_name: string,
+    phone: string,
+    telegram?: string | null
+  }
 }
 
 export function createNote(payload: CreateNotePayload) {
@@ -28,9 +32,13 @@ export function createNote(payload: CreateNotePayload) {
         attributes: {
           master_id: payload.master_id,
           service_id: payload.service_id,
-          client_id: payload.client_id,
           start_at: payload.start_at,
           end_at: payload.end_at,
+          client: {
+            full_name: payload.client.full_name,
+            phone: payload.client.phone,
+            telegram: payload.client.telegram
+          }
         },
       },
     })

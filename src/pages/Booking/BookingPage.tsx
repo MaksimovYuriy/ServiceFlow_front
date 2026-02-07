@@ -1,4 +1,4 @@
-import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button } from "@mui/material";
+import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button, TextField } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../theme";
@@ -18,8 +18,9 @@ export function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
-  // Пока клиент оставим заглушкой (будет форма позже)
-  const clientId = 1; // TODO: заменить на реальный client_id
+  const [clientFullName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientTelegram, setClientTelegram] = useState("");
 
   // Данные по услугам
   const { data: services = [], isLoading: servicesLoading } = useServices();
@@ -38,12 +39,25 @@ export function BookingPage() {
   const toLogin = () => navigate("/login");
 
   const handleConfirm = () => {
-    if (!selectedMasterId || !selectedServiceId || !selectedDate || !selectedSlot || !clientId) return;
+    if (
+      !selectedMasterId ||
+      !selectedServiceId ||
+      !selectedDate ||
+      !selectedSlot ||
+      !clientFullName ||
+      !clientPhone
+    ) {
+      return;
+    }
 
     const payload = {
       master_id: selectedMasterId,
       service_id: selectedServiceId,
-      client_id: clientId,
+      client: {
+        full_name: clientFullName,
+        phone: clientPhone,
+        telegram: clientTelegram || null,
+      },
       start_at: new Date(`${selectedDate}T${selectedSlot.start_time}`).toISOString(),
       end_at: new Date(`${selectedDate}T${selectedSlot.end_time}`).toISOString(),
     };
@@ -53,12 +67,16 @@ export function BookingPage() {
         console.log("Запись создана:", data);
         setSelectedDate(null);
         setSelectedSlot(null);
+        setClientName("");
+        setClientPhone("");
+        setClientTelegram("");
       },
       onError: (err) => {
         console.error("Ошибка при создании записи:", err);
       },
     });
   };
+
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -161,6 +179,39 @@ export function BookingPage() {
             </Box>
           </Box>
         )}
+
+        {selectedDate && selectedSlot && (
+          <Box sx={{ m: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Typography variant="subtitle1">
+              Данные клиента
+            </Typography>
+
+            <TextField
+              label="Имя"
+              variant="standard"
+              value={clientFullName}
+              onChange={(e) => setClientName(e.target.value)}
+              required
+            />
+
+            <TextField
+              label="Номер телефона"
+              variant="standard"
+              value={clientPhone}
+              onChange={(e) => setClientPhone(e.target.value)}
+              required
+            />
+
+            <TextField
+              label="Telegram (необязательно)"
+              variant="standard"
+              value={clientTelegram}
+              onChange={(e) => setClientTelegram(e.target.value)}
+              placeholder="@username"
+            />
+          </Box>
+        )}
+
 
         {selectedDate && selectedSlot && (
           <Box sx={{ mt: 2 }}>
