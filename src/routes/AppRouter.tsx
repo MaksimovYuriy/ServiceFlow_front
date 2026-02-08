@@ -9,6 +9,7 @@ import MaterialPage from "../pages/Crm/MaterialPage";
 import ServiceMaterialPage from "../pages/Crm/ServiceMaterialPage";
 import ServiceMasterPage from "../pages/Crm/ServiceMasterPage";
 import MasterSchedulePage from "../pages/Crm/MasterSchedulePage";
+import ClientPage from "../pages/Crm/ClientPage";
 
 export function AppRouter() {
   return (
@@ -21,6 +22,7 @@ export function AppRouter() {
         <Route path="/admin/crm/users" element={<UserPage />} />
         <Route path="/admin/crm/services" element={<ServicePage />} />
         <Route path="/admin/crm/masters" element={<MasterPage />} />
+        <Route path="/admin/crm/clients" element={<ClientPage />} />
         <Route path="/admin/crm/materials" element={<MaterialPage />} />
         <Route path="/admin/crm/service_materials" element={<ServiceMaterialPage />} />
         <Route path="/admin/crm/service_masters" element={<ServiceMasterPage />} />
