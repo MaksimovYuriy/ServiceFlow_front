@@ -11,6 +11,7 @@ export interface AdminSection {
 }
 
 export const adminSections: AdminSection[] = [
+  { title: "Управление записями", path: "/admin/notes", icon: <PeopleAltIcon /> },
   { title: "Сотрудники (администрация)", path: "/admin/crm/users", icon: <PeopleAltIcon /> },
   { title: "Сотрудники (мастеры)", path: "/admin/crm/masters", icon: <PeopleAltIcon /> },
   { title: "Клиенты", path: "/admin/crm/clients", icon: <PersonIcon /> },

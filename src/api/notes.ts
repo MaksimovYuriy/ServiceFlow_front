@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import { api } from "./middlewares/axios";
-import type { JsonApiResponse, JsonApiResource } from "./middlewares/jsonapi";
+import type { JsonApiResponse, JsonApiResource, JsonApiArrayResponse } from "./middlewares/jsonapi";
 
 export interface NoteResponseAttributes {
   service_id: number;
@@ -23,6 +23,18 @@ export interface CreateNotePayload {
     telegram?: string | null
   }
 }
+
+export interface NoteForTable {
+  id: number;
+  client_name: string;
+  service_title: string;
+  master_name: string;
+  start_at: string;
+  total_price: number | null;
+  status: string;
+  time: string; 
+}
+
 
 export function createNote(payload: CreateNotePayload) {
   return api
@@ -50,3 +62,40 @@ export function createNote(payload: CreateNotePayload) {
       };
     });
 }
+
+export function fetchNotesByDate(date: string) {
+  return api
+    .get<JsonApiArrayResponse<NoteForTable>>(`/api/notes?filter[date]=${date}`)
+    .then((response) =>
+      response.data.data.map((item: JsonApiResource<NoteForTable>) => {
+        const attrs = item.attributes;
+        return {
+          id: Number(item.id),
+          client_name: attrs.client_name,
+          master_name: attrs.master_name,
+          service_title: attrs.service_title,
+          start_at: attrs.start_at,
+          total_price: attrs.total_price,
+          status: attrs.status,
+          time: new Date(attrs.start_at).toLocaleTimeString("ru-RU", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        };
+      })
+    );
+}
+
+export function completeNote(id: number) {
+  return api
+    .patch<{ success: boolean }>(`/api/notes/${id}/complete`, {
+      data: {
+        type: "notes",
+        attributes: {
+          status: "completed",
+        },
+      },
+    })
+    .then((response) => response.data.success);
+}
+

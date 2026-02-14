@@ -10,6 +10,7 @@ import ServiceMaterialPage from "../pages/Crm/ServiceMaterialPage";
 import ServiceMasterPage from "../pages/Crm/ServiceMasterPage";
 import MasterSchedulePage from "../pages/Crm/MasterSchedulePage";
 import ClientPage from "../pages/Crm/ClientPage";
+import NotesManagmentPage from "../pages/Dashboard/NotesManagmentPage";
 
 export function AppRouter() {
   return (
@@ -27,6 +28,7 @@ export function AppRouter() {
         <Route path="/admin/crm/service_materials" element={<ServiceMaterialPage />} />
         <Route path="/admin/crm/service_masters" element={<ServiceMasterPage />} />
         <Route path="/admin/crm/master_schedule" element={<MasterSchedulePage />} />
+        <Route path="/admin/notes" element={<NotesManagmentPage />} />
       </Routes>
     </BrowserRouter>
   );
