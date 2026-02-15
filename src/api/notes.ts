@@ -80,6 +80,7 @@ export function fetchNotesByDate(date: string) {
           time: new Date(attrs.start_at).toLocaleTimeString("ru-RU", {
             hour: "2-digit",
             minute: "2-digit",
+            timeZone: "UTC"
           }),
         };
       })
@@ -96,6 +97,12 @@ export function completeNote(id: number) {
         },
       },
     })
+    .then((response) => response.data.success);
+}
+
+export function cancelNote(id: number) {
+  return api
+    .patch<{ success: boolean }>(`/api/notes/${id}/cancel`)
     .then((response) => response.data.success);
 }
 

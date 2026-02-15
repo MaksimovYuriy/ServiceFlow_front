@@ -16,6 +16,7 @@ import Navbar from "../../components/Navbar";
 import { generateNextDates } from "../../lib/generateDates";
 import { useNotesByDate } from "../../api/hooks/notes/useNotesByDate";
 import { useCompleteNote } from "../../api/hooks/notes/useCompleteNote";
+import { useCancelNote } from "../../api/hooks/notes/useCancelNote";
 
 const NotesManagmentPage = () => {
   const dateOptions = generateNextDates(14);
@@ -26,6 +27,8 @@ const NotesManagmentPage = () => {
 
   // Хук для подтверждения записи
   const completeNoteMutation = useCompleteNote();
+
+  const cancelNoteMutation = useCancelNote();
 
   // Колонки создаем внутри компонента, чтобы использовать хук
   const columns: GridColDef[] = useMemo(() => [
@@ -60,7 +63,7 @@ const NotesManagmentPage = () => {
               variant="outlined"
               color="error"
               disabled={!isPending}
-              onClick={() => console.log("cancel", params.row.id)}
+              onClick={() => cancelNoteMutation.mutate(params.row.id)}
             >
               Отменить
             </Button>
