@@ -12,7 +12,8 @@ import type { FC, ChangeEvent } from "react";
 export interface CreateMaterialForm {
   title: string,
   quantity: number,
-  minimal_quantity: number
+  minimal_quantity: number,
+  price: number
 }
 
 interface CreateMaterialModalProps {
@@ -57,6 +58,14 @@ const CreateServiceDialog: FC<CreateMaterialModalProps> = ({
           label="Minimal Qunatity (Alert)"
           name="minimal_quantity"
           value={form.minimal_quantity}
+          onChange={onChange}
+          fullWidth
+        />
+
+        <TextField
+          label="Price per one"
+          name="price"
+          value={form.price}
           onChange={onChange}
           fullWidth
         />

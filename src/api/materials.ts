@@ -8,6 +8,7 @@ export interface MaterialResponseAttributes {
   title: string;
   quantity: number;
   minimal_quantity: number;
+  price: number;
 }
 
 export type Material = {
@@ -15,12 +16,14 @@ export type Material = {
   title: string;
   quantity: number;
   minimal_quantity: number;
+  price: number;
 };
 
 export interface CreateMaterialPayload {
   title: string;
   quantity: number;
   minimal_quantity: number;
+  price: number;
 }
 
 export interface UpdateMaterialPayload {
@@ -28,6 +31,7 @@ export interface UpdateMaterialPayload {
   title: string;
   quantity: number;
   minimal_quantity: number;
+  price: number;
 }
 
 
@@ -42,7 +46,8 @@ export function fetchMaterials() {
           id: Number(item.id),
           title: item.attributes.title,
           quantity: item.attributes.quantity,
-          minimal_quantity: item.attributes.minimal_quantity
+          minimal_quantity: item.attributes.minimal_quantity,
+          price: item.attributes.price
         })
       )
     );
@@ -58,7 +63,8 @@ export function createMaterial(payload: CreateMaterialPayload) {
         attributes: {
           title: payload.title,
           quantity: payload.quantity,
-          minimal_quantity: payload.minimal_quantity
+          minimal_quantity: payload.minimal_quantity,
+          price: payload.price
         },
       },
     }
@@ -70,7 +76,8 @@ export function createMaterial(payload: CreateMaterialPayload) {
       id: Number(item.id),
       title: item.attributes.title,
       quantity: item.attributes.quantity,
-      minimal_quantity: item.attributes.minimal_quantity
+      minimal_quantity: item.attributes.minimal_quantity,
+      price: item.attributes.price
     };
   });
 }
@@ -88,7 +95,8 @@ export function updateMaterial(payload: UpdateMaterialPayload) {
           attributes: {
             title: payload.title,
             quantity: payload.quantity,
-            minimal_quantity: payload.minimal_quantity
+            minimal_quantity: payload.minimal_quantity,
+            price: payload.price
           },
         },
       }
@@ -100,7 +108,8 @@ export function updateMaterial(payload: UpdateMaterialPayload) {
         id: Number(item.id),
         title: item.attributes.title,
         quantity: item.attributes.quantity,
-        minimal_quantity: item.attributes.minimal_quantity
+        minimal_quantity: item.attributes.minimal_quantity,
+        price: item.attributes.price
       };
     });
 }

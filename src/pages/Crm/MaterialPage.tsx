@@ -30,6 +30,7 @@ const getColumns = (
   { field: "title", headerName: "Title", flex: 1, editable: true },
   { field: "quantity", headerName: "Quantity", flex: 1 },
   { field: "minimal_quantity", headerName: "Minimal Quantity (Alert)", flex: 1, editable: true },
+  { field: "price", headerName: "Price per one", flex: 1, editable: true },
   {
     field: "actions",
     headerName: "Actions",
@@ -142,7 +143,7 @@ const MaterialPage = () => {
   const [actionType, setActionType] = useState<"inc" | "dec" | null>(null);
   const [amount, setAmount] = useState<number>(1);
 
-  const initialForm: CreateMaterialForm = { title: "", quantity: 0, minimal_quantity: 0 };
+  const initialForm: CreateMaterialForm = { title: "", quantity: 0, minimal_quantity: 0, price: 0 };
   const [form, setForm] = useState<CreateMaterialForm>(initialForm);
 
   const handleOpen = () => setOpen(true);
