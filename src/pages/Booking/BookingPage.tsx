@@ -1,4 +1,4 @@
-import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button, TextField, Snackbar, Alert } from "@mui/material";
+import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button, TextField } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../theme";
@@ -8,12 +8,11 @@ import type { Slot } from "../../api/masters";
 import { useMasterAvailableDates } from "../../api/hooks/masters/useMasterAvailableDates";
 import { useMasterAvailableSlots } from "../../api/hooks/masters/useMasterAvailableSlots";
 import { useCreateNote } from "../../api/hooks/notes/useCreateNote";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export function BookingPage() {
   const navigate = useNavigate();
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   // Выбор услуги и мастера
   const [selectedServiceId, setSelectedServiceId] = useState<number | "">("");
@@ -74,10 +73,12 @@ export function BookingPage() {
         setClientPhone("");
         setClientTelegram("");
       },
-      onError: (err) => {
+      onError: (err: unknown) => {
         console.error("Ошибка при создании записи:", err);
-        setErrorMessage("Что-то пошло не так, услуга временно недоступна");
-        setOpenSnackbar(true);
+        const axiosErr = err as { response?: { data?: { error?: string } } };
+        const message = axiosErr.response?.data?.error
+          ?? "Что-то пошло не так, услуга временно недоступна";
+        showSnackbar(message, "error");
       },
     });
   };
@@ -233,22 +234,6 @@ export function BookingPage() {
           </Box>
         )}
       </Paper>
-
-      {/* Snackbar с ошибкой */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {errorMessage}
-        </Alert>
-      </Snackbar>
 
       {/* Кнопка входа */}
       <Button
