@@ -14,15 +14,25 @@ type Props = {
   onDelete: (id: number) => void;
 };
 
-const weekdays = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
+const weekdays: Record<number, string> = {
+  1: "Понедельник",
+  2: "Вторник",
+  3: "Среда",
+  4: "Четверг",
+  5: "Пятница",
+  6: "Суббота",
+  0: "Воскресенье",
+};
+
+const weekdayOrder = [1, 2, 3, 4, 5, 6, 0];
 
 export const ScheduleTable = ({ rows, loading, onDelete }: Props) => {
   // Группируем интервалы по дню недели
-  const rowsByDay = weekdays.map((day, index) => {
-    const dayRows = rows.filter(r => r.weekday === index);
+  const rowsByDay = weekdayOrder.map((dayNum) => {
+    const dayRows = rows.filter(r => r.weekday === dayNum);
     return {
-      id: index,
-      day,
+      id: dayNum,
+      day: weekdays[dayNum],
       intervals: dayRows,
     };
   });

@@ -52,7 +52,7 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
               <MenuItem value={4}>Четверг</MenuItem>
               <MenuItem value={5}>Пятница</MenuItem>
               <MenuItem value={6}>Суббота</MenuItem>
-              <MenuItem value={7}>Воскресенье</MenuItem>
+              <MenuItem value={0}>Воскресенье</MenuItem>
             </Select>
           </FormControl>
 

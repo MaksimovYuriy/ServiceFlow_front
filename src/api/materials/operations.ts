@@ -24,7 +24,7 @@ export function add(payload: OperationPayload) {
 /* ===== SUBTRACT ===== */
 export function subtract(payload: OperationPayload) {
   return api
-    .post<OperationResponse>(`/api/materials/substract`, {
+    .post<OperationResponse>(`/api/materials/subtract`, {
       material_id: payload.material_id,
       amount: payload.amount,
     })
