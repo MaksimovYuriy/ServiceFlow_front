@@ -22,4 +22,5 @@ export const adminSections: AdminSection[] = [
   { title: "Расписание мастеров", path: "/admin/crm/master_schedule", icon: <InventoryIcon /> },
   { title: "Аналитика", path: "/admin/crm/atalytic", icon: <BarChartIcon /> },
   { title: "Анализ цен", path: "/admin/price_analysis", icon: <BarChartIcon /> },
+  { title: "Прогноз закупок", path: "/admin/material_forecast", icon: <BarChartIcon /> },
 ];
