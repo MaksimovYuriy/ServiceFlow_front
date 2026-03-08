@@ -13,6 +13,7 @@ import ClientPage from "../pages/Crm/ClientPage";
 import NotesManagmentPage from "../pages/Dashboard/NotesManagmentPage";
 import PriceAnalysisPage from "../pages/Crm/PriceAnalysisPage";
 import MaterialForecastPage from "../pages/Crm/MaterialForecastPage";
+import AnalyticsPage from "../pages/Crm/Analytics/AnalyticsPage";
 
 export function AppRouter() {
   return (
@@ -33,6 +34,7 @@ export function AppRouter() {
         <Route path="/admin/notes" element={<NotesManagmentPage />} />
         <Route path="/admin/price_analysis" element={<PriceAnalysisPage />} />
         <Route path="/admin/material_forecast" element={<MaterialForecastPage />} />
+        <Route path="/admin/crm/analytics" element={<AnalyticsPage />} />
       </Routes>
     </BrowserRouter>
   );
