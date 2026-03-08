@@ -1,7 +1,7 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { useState, useMemo } from "react";
 
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 
 import CreateServiceMaterialDialog from "../../components/dialogues/CreateServiceMaterialDialog";
 
@@ -13,6 +13,7 @@ import type { CreateServiceMaterialForm } from "../../types/serviceMaterial";
 import { useServiceMaterialPage } from "../../api/hooks/service_materials/useServiceMaterialPage";
 import { ServiceSelect } from "../../components/selects/ServiceSelect";
 import { ServiceMaterialTable } from "../../components/tables/ServiceMaterialTable";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const initialForm: CreateServiceMaterialForm = {
   material_id: "",
@@ -24,6 +25,7 @@ const ServiceMaterialPage = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<CreateServiceMaterialForm>(initialForm);
+  const { showSnackbar } = useSnackbar();
 
   // ===== Dictionaries =====
   const { data: servicesData = [], isLoading: servicesLoading } = useServices();
@@ -74,6 +76,8 @@ const ServiceMaterialPage = () => {
       service_id: selectedServiceId,
       material_id: form.material_id,
       required_quantity: form.required_quantity,
+    }, {
+      onSuccess: () => showSnackbar("Материал привязан к услуге", "success"),
     });
 
     setForm(initialForm);
@@ -90,10 +94,7 @@ const ServiceMaterialPage = () => {
 
 
   return (
-    <>
-      <Navbar />
-
-      <Box sx={{ mt: 8, px: 2 }}>
+    <AdminLayout>
         {/* Service select */}
         <Paper sx={{ p: 2, mb: 3 }}>
           <ServiceSelect
@@ -153,8 +154,7 @@ const ServiceMaterialPage = () => {
           }
           onSubmit={handleCreate}
         />
-      </Box>
-    </>
+    </AdminLayout>
   );
 };
 

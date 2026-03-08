@@ -1,7 +1,7 @@
-import { Box, Paper, Typography, TextField, Button } from "@mui/material";
+import { Paper, Typography, TextField, Button, Box } from "@mui/material";
+import { PublicLayout } from "../../components/layouts/PublicLayout";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import theme from "../../theme";
 import { useLogin } from "../../api/hooks/useLogin";
 
 export function LoginPage() {
@@ -13,30 +13,22 @@ export function LoginPage() {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     loginMutation.mutate(
       { email, password },
       {
         onSuccess: (response) => {
           const { token } = response.data.attributes;
-
           sessionStorage.setItem("token", token);
           navigate("/admin/dashboard");
         },
-        onError: () => {
-          alert("Ошибка авторизации");
-        }
       }
     );
   };
 
-  const toBooking = () => {
-    navigate("/booking")
-  }
-
   return (
-    <Box>
-      <Paper>
+    <PublicLayout>
+      <Paper sx={{ p: 4, maxWidth: 400, width: "100%" }}>
         <Typography variant="h5" component="h1" textAlign="center" mb={2}>
           Вход в систему
         </Typography>
@@ -66,15 +58,17 @@ export function LoginPage() {
           </Button>
 
           <Button
-            sx={{backgroundColor: theme.palette.secondary.light}}
-            type="submit"
-            onClick={toBooking}
+            variant="text"
+            color="inherit"
+            type="button"
+            onClick={() => navigate("/booking")}
+            sx={{ fontSize: "0.875rem" }}
           >
             Запись на услуги
           </Button>
         </Box>
       </Paper>
-    </Box>
+    </PublicLayout>
   );
 }
 

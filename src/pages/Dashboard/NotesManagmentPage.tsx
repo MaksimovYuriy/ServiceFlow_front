@@ -7,30 +7,39 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Toolbar,
   Select,
 } from "@mui/material";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useState, useMemo } from "react";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { generateNextDates } from "../../lib/generateDates";
 import { useNotesByDate } from "../../api/hooks/notes/useNotesByDate";
 import { useCompleteNote } from "../../api/hooks/notes/useCompleteNote";
 import { useCancelNote } from "../../api/hooks/notes/useCancelNote";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const NotesManagmentPage = () => {
   const dateOptions = generateNextDates(14);
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const { showSnackbar } = useSnackbar();
 
-  // Хук для загрузки заметок
   const { data: notes = [], isLoading, isError } = useNotesByDate(selectedDate || null);
 
-  // Хук для подтверждения записи
   const completeNoteMutation = useCompleteNote();
-
   const cancelNoteMutation = useCancelNote();
 
-  // Колонки создаем внутри компонента, чтобы использовать хук
+  const handleComplete = (id: number) => {
+    completeNoteMutation.mutate(id, {
+      onSuccess: () => showSnackbar("Запись подтверждена", "success"),
+    });
+  };
+
+  const handleCancel = (id: number) => {
+    cancelNoteMutation.mutate(id, {
+      onSuccess: () => showSnackbar("Запись отменена", "success"),
+    });
+  };
+
   const columns: GridColDef[] = useMemo(() => [
     { field: "client_name", headerName: "Клиент", flex: 1 },
     { field: "service_title", headerName: "Услуга", flex: 1 },
@@ -54,7 +63,7 @@ const NotesManagmentPage = () => {
               variant="contained"
               color="success"
               disabled={!isPending}
-              onClick={() => completeNoteMutation.mutate(params.row.id)}
+              onClick={() => handleComplete(params.row.id)}
             >
               Подтвердить
             </Button>
@@ -63,7 +72,7 @@ const NotesManagmentPage = () => {
               variant="outlined"
               color="error"
               disabled={!isPending}
-              onClick={() => cancelNoteMutation.mutate(params.row.id)}
+              onClick={() => handleCancel(params.row.id)}
             >
               Отменить
             </Button>
@@ -71,18 +80,14 @@ const NotesManagmentPage = () => {
         );
       },
     },
-  ], [completeNoteMutation]);
+  ], [completeNoteMutation, cancelNoteMutation]);
 
   return (
-    <div>
-      <Navbar />
-      <Toolbar />
-      <Box sx={{ p: 3 }}>
+    <AdminLayout>
         <Typography variant="h5" mb={2}>
           Управление записями
         </Typography>
 
-        {/* Выбор даты */}
         <FormControl sx={{ minWidth: 240, mb: 3 }}>
           <InputLabel id="date-label">Дата</InputLabel>
           <Select
@@ -99,7 +104,6 @@ const NotesManagmentPage = () => {
           </Select>
         </FormControl>
 
-        {/* Таблица */}
         <Paper sx={{ width: "100%", height: 500 }}>
           {!selectedDate && (
             <Box
@@ -137,8 +141,7 @@ const NotesManagmentPage = () => {
             </Box>
           )}
         </Paper>
-      </Box>
-    </div>
+    </AdminLayout>
   );
 };
 

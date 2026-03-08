@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Box, Paper, Stack, Typography, Button } from "@mui/material";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 
 import { ServiceMasterTable } from "../../components/tables/ServiceMasterTable";
 import CreateServiceMasterDialog from "../../components/dialogues/CreateServiceMasterDialog";
@@ -10,8 +10,10 @@ import { useServiceMasterPage } from "../../api/hooks/service_masters/useService
 import type { CreateServiceMasterForm } from "../../types/serviceMaster";
 import { ServiceSelect } from "../../components/selects/ServiceSelect";
 import { useMasters } from "../../api/hooks/masters/useMasters";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const ServiceMasterPage = () => {
+  const { showSnackbar } = useSnackbar();
   // ===== Выбор услуги =====
   const [selectedServiceId, setSelectedServiceId] = useState<number | "">("");
 
@@ -59,6 +61,8 @@ const ServiceMasterPage = () => {
     create.mutate({
       service_id: Number(selectedServiceId),
       master_id: Number(form.master_id),
+    }, {
+      onSuccess: () => showSnackbar("Мастер назначен", "success"),
     });
 
     setForm(initialForm);
@@ -70,10 +74,7 @@ const ServiceMasterPage = () => {
   };
 
   return (
-    <div>
-      <Navbar />
-
-      <Box sx={{ mt: 8, px: 2 }}>
+    <AdminLayout>
         {/* Выбор услуги */}
         <Paper sx={{ p: 2, mb: 3 }}>
           <ServiceSelect
@@ -86,7 +87,7 @@ const ServiceMasterPage = () => {
 
         {/* Таблица мастеров */}
         {selectedServiceId ? (
-          <Paper sx={{ maxWidth: "100%", width: "100vw", p: 2 }}>
+          <Paper sx={{ width: "100%", p: 2 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">Назначенные мастера</Typography>
               <Button
@@ -119,8 +120,7 @@ const ServiceMasterPage = () => {
           onChange={handleFormChange}
           onSubmit={handleSubmit}
         />
-      </Box>
-    </div>
+    </AdminLayout>
   );
 };
 

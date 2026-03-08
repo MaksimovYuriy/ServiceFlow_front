@@ -2,18 +2,18 @@ import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
-    mode: 'light', // можно потом переключить на 'dark'
+    mode: 'light',
     primary: {
-      main: '#7fc980', // мягкий зелёный
+      main: '#5C6BC0',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#dc004e', // розовый акцент
+      main: '#dc004e',
       contrastText: '#fff',
     },
     background: {
-      default: '#f5f7f6', // общий фон страницы
-      paper: '#ffffff',   // фон карточек и форм (например, Paper)
+      default: '#f5f7f6',
+      paper: '#ffffff',
     },
     text: {
       primary: '#1a1a1a',
@@ -38,15 +38,6 @@ const theme = createTheme({
   },
 
   components: {
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          fontSize: '0.875rem',
-          minHeight: 'auto',
-          padding: '8px 16px'
-        }
-      }
-    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -77,41 +68,18 @@ const theme = createTheme({
       }
     },
     MuiPaper: {
-      styleOverrides: {
-        root: {
-          maxWidth: "100%",
-          padding: "32px",
-          borderRadius: "16px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          cursor: "pointer",
-        },
-      },
       defaultProps: {
         elevation: 3,
-      },
-    },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          fontSize: "32px", // стандартный размер иконок на Dashboard
-        },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          maxWidth: "100%", // снимаем ограничение
-          borderRadius: 0,   // чтобы углы были прямыми
-          padding: 0,        // убираем лишние паддинги
+          borderRadius: 0,
         },
       },
-    }
+    },
   },
 });
 
 export default theme;
-

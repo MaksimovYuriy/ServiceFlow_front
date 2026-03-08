@@ -1,11 +1,14 @@
 import './App.css'
 import { AppRouter } from './routes/AppRouter';
 import { SnackbarProvider } from './context/SnackbarContext';
+import { QueryProvider } from './providers/QueryProvider';
 
 function App() {
   return (
     <SnackbarProvider>
-      <AppRouter />
+      <QueryProvider>
+        <AppRouter />
+      </QueryProvider>
     </SnackbarProvider>
   );
 }

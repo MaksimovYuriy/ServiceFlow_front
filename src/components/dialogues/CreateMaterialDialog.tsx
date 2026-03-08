@@ -24,7 +24,7 @@ interface CreateMaterialModalProps {
   onSubmit: () => void;
 }
 
-const CreateServiceDialog: FC<CreateMaterialModalProps> = ({
+const CreateMaterialDialog: FC<CreateMaterialModalProps> = ({
   open,
   form,
   onClose,
@@ -32,8 +32,8 @@ const CreateServiceDialog: FC<CreateMaterialModalProps> = ({
   onSubmit
 }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Создать пользователя</DialogTitle>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Создать материал</DialogTitle>
 
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
@@ -55,7 +55,7 @@ const CreateServiceDialog: FC<CreateMaterialModalProps> = ({
         />
 
         <TextField
-          label="Minimal Qunatity (Alert)"
+          label="Minimal Quantity (Alert)"
           name="minimal_quantity"
           value={form.minimal_quantity}
           onChange={onChange}
@@ -81,4 +81,4 @@ const CreateServiceDialog: FC<CreateMaterialModalProps> = ({
   );
 };
 
-export default CreateServiceDialog;
+export default CreateMaterialDialog;

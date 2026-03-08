@@ -26,7 +26,7 @@ interface CreateMasterModalProps {
   onSubmit: () => void;
 }
 
-const CreateServiceDialog: FC<CreateMasterModalProps> = ({
+const CreateMasterDialog: FC<CreateMasterModalProps> = ({
   open,
   form,
   onClose,
@@ -34,8 +34,8 @@ const CreateServiceDialog: FC<CreateMasterModalProps> = ({
   onSubmit
 }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Создать пользователя</DialogTitle>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Создать мастера</DialogTitle>
 
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
@@ -101,4 +101,4 @@ const CreateServiceDialog: FC<CreateMasterModalProps> = ({
   );
 };
 
-export default CreateServiceDialog;
+export default CreateMasterDialog;

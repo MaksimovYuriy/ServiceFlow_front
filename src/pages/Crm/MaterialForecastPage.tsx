@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { useMaterialForecast } from "../../api/hooks/material_forecast/useMaterialForecast";
 import { useStartMaterialForecast } from "../../api/hooks/material_forecast/useStartMaterialForecast";
 import type { ForecastPrediction } from "../../api/material_forecast";
@@ -82,10 +82,8 @@ const MaterialForecastPage = () => {
   );
 
   return (
-    <div>
-      <Navbar />
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "center", mt: 8 }}>
+    <AdminLayout>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
         <Button
           variant="contained"
           onClick={() => startForecast()}
@@ -142,7 +140,7 @@ const MaterialForecastPage = () => {
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "column", mt: 3 }}>
-            <Paper sx={{ maxWidth: "100%", width: "100vw" }}>
+            <Paper sx={{ width: "100%" }}>
               <DataGrid
                 rows={rows}
                 columns={columns}
@@ -166,7 +164,7 @@ const MaterialForecastPage = () => {
           </Box>
         </>
       )}
-    </div>
+    </AdminLayout>
   );
 };
 

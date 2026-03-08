@@ -33,8 +33,8 @@ const CreateServiceDialog: FC<CreateServiceModalProps> = ({
   onSubmit
 }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Создать пользователя</DialogTitle>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Создать услугу</DialogTitle>
 
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}

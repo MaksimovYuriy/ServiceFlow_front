@@ -1,7 +1,7 @@
 import { Box, FormControl, Select, MenuItem, InputLabel, Paper, Typography, Button, TextField } from "@mui/material";
+import { PublicLayout } from "../../components/layouts/PublicLayout";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import theme from "../../theme";
 import { useServices } from "../../api/hooks/services/useServices";
 import { useMastersByService } from "../../api/hooks/masters/useMasterByService";
 import type { Slot } from "../../api/masters";
@@ -14,7 +14,6 @@ export function BookingPage() {
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
-  // Выбор услуги и мастера
   const [selectedServiceId, setSelectedServiceId] = useState<number | "">("");
   const [selectedMasterId, setSelectedMasterId] = useState<number | "">("");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -24,21 +23,14 @@ export function BookingPage() {
   const [clientPhone, setClientPhone] = useState("");
   const [clientTelegram, setClientTelegram] = useState("");
 
-  // Данные по услугам
   const { data: services = [], isLoading: servicesLoading } = useServices();
-
-  // Данные по мастерам для выбранной услуги
   const { data: masters = [], isLoading: mastersLoading } = useMastersByService(Number(selectedServiceId));
-
   const { data: availableDates = [], isLoading: datesLoading } =
     useMasterAvailableDates(Number(selectedMasterId));
-
   const { data: availableSlots = [], isLoading: slotsLoading } =
     useMasterAvailableSlots(Number(selectedMasterId), selectedDate);
 
   const createNoteMutation = useCreateNote();
-
-  const toLogin = () => navigate("/login");
 
   const handleConfirm = () => {
     if (
@@ -65,41 +57,34 @@ export function BookingPage() {
     };
 
     createNoteMutation.mutate(payload, {
-      onSuccess: (data) => {
-        console.log("Запись создана:", data);
+      onSuccess: () => {
+        showSnackbar("Запись успешно создана!", "success");
         setSelectedDate(null);
         setSelectedSlot(null);
         setClientName("");
         setClientPhone("");
         setClientTelegram("");
       },
-      onError: (err: unknown) => {
-        console.error("Ошибка при создании записи:", err);
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        const message = axiosErr.response?.data?.error
-          ?? "Что-то пошло не так, услуга временно недоступна";
-        showSnackbar(message, "error");
-      },
     });
   };
 
-
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Paper sx={{ p: 3, minWidth: '100vh', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <PublicLayout>
+      <Paper sx={{ p: 3, maxWidth: 600, width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
         <Typography variant="h5" component="h1" textAlign="center" mb={2}>
           Запись в наш центр
         </Typography>
 
         {/* Селект услуг */}
-        <FormControl variant="standard" sx={{ m: 1, minWidth: '100%' }}>
+        <FormControl fullWidth>
           <InputLabel id="service-label">Выберите услугу</InputLabel>
           <Select
             labelId="service-label"
+            label="Выберите услугу"
             value={selectedServiceId}
             onChange={(e) => {
               setSelectedServiceId(Number(e.target.value));
-              setSelectedMasterId(""); // сброс выбора мастера при смене услуги
+              setSelectedMasterId("");
               setSelectedDate(null);
               setSelectedSlot(null);
             }}
@@ -114,10 +99,11 @@ export function BookingPage() {
         </FormControl>
 
         {/* Селект мастеров */}
-        <FormControl variant="standard" sx={{ m: 1, minWidth: '100%' }}>
+        <FormControl fullWidth>
           <InputLabel id="master-label">Выберите мастера</InputLabel>
           <Select
             labelId="master-label"
+            label="Выберите мастера"
             value={selectedMasterId}
             onChange={(e) => {
               setSelectedMasterId(Number(e.target.value));
@@ -134,14 +120,12 @@ export function BookingPage() {
           </Select>
         </FormControl>
 
-        <FormControl
-          variant="standard"
-          sx={{ m: 1, minWidth: "100%" }}
-          disabled={!selectedMasterId || datesLoading}
-        >
+        {/* Селект даты */}
+        <FormControl fullWidth disabled={!selectedMasterId || datesLoading}>
           <InputLabel id="date-label">Выберите дату</InputLabel>
           <Select
             labelId="date-label"
+            label="Выберите дату"
             value={selectedDate ?? ""}
             onChange={(e) => {
               setSelectedDate(e.target.value);
@@ -157,7 +141,7 @@ export function BookingPage() {
         </FormControl>
 
         {selectedDate && (
-          <Box sx={{ m: 1 }}>
+          <Box>
             <Typography variant="subtitle1" mb={1}>
               Выберите время
             </Typography>
@@ -172,12 +156,14 @@ export function BookingPage() {
                 : availableSlots.map((slot) => (
                     <Button
                       key={`${slot.start_time}-${slot.end_time}`}
+                      size="small"
                       variant={
                         selectedSlot?.start_time === slot.start_time
                           ? "contained"
                           : "outlined"
                       }
                       onClick={() => setSelectedSlot(slot)}
+                      sx={{ px: 2, py: 1 }}
                     >
                       {slot.start_time} – {slot.end_time}
                     </Button>
@@ -187,63 +173,61 @@ export function BookingPage() {
         )}
 
         {selectedDate && selectedSlot && (
-          <Box sx={{ m: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography variant="subtitle1">
               Данные клиента
             </Typography>
 
             <TextField
               label="Имя"
-              variant="standard"
               value={clientFullName}
               onChange={(e) => setClientName(e.target.value)}
               required
+              fullWidth
             />
 
             <TextField
               label="Номер телефона"
-              variant="standard"
               value={clientPhone}
               onChange={(e) => setClientPhone(e.target.value)}
               required
+              fullWidth
             />
 
             <TextField
               label="Telegram (необязательно)"
-              variant="standard"
               value={clientTelegram}
               onChange={(e) => setClientTelegram(e.target.value)}
               placeholder="@username"
+              fullWidth
             />
           </Box>
         )}
 
-
         {selectedDate && selectedSlot && (
-          <Box sx={{ mt: 2 }}>
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              disabled={!selectedMasterId || !selectedDate || !selectedSlot}
-              onClick={handleConfirm}
-              sx={{ width: "100%" }}
-            >
-              Подтвердить
-            </Button>
-          </Box>
+          <Button
+            type="button"
+            variant="contained"
+            color="primary"
+            disabled={!selectedMasterId || !selectedDate || !selectedSlot}
+            onClick={handleConfirm}
+            fullWidth
+          >
+            Подтвердить
+          </Button>
         )}
-      </Paper>
 
-      {/* Кнопка входа */}
-      <Button
-        type="button"
-        onClick={toLogin}
-        sx={{ backgroundColor: theme.palette.secondary.light }}
-      >
-        Вход сотрудника
-      </Button>
-    </Box>
+        <Button
+          variant="text"
+          color="inherit"
+          type="button"
+          onClick={() => navigate("/login")}
+          sx={{ fontSize: "0.75rem", alignSelf: "center", mt: 2 }}
+        >
+          Вход сотрудника
+        </Button>
+      </Paper>
+    </PublicLayout>
   );
 }
 

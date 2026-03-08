@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 
 interface MasterSelectProps {
   value: number | "";
@@ -7,22 +7,22 @@ interface MasterSelectProps {
   onChange: (id: number) => void;
 }
 
-export const MasterSelect = ({ value, masters, loading, onChange }: MasterSelectProps) => (
-  <FormControl fullWidth>
-    <InputLabel>Мастер</InputLabel>
-    <Select
-      value={value}
-      label="Мастер"
-      onChange={(e) => onChange(+e.target.value)}
-    >
-      <MenuItem value="">
-        <em>Выберите мастера</em>
-      </MenuItem>
-      {loading
-        ? <MenuItem disabled>Загрузка...</MenuItem>
-        : masters.map((m) => (
-            <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
-          ))}
-    </Select>
-  </FormControl>
-);
+export const MasterSelect = ({ value, masters, loading, onChange }: MasterSelectProps) => {
+  const selected = masters.find((m) => m.id === value) ?? null;
+
+  return (
+    <Autocomplete
+      options={masters}
+      getOptionLabel={(option) => option.name}
+      value={selected}
+      loading={loading}
+      onChange={(_e, newValue) => {
+        if (newValue) onChange(newValue.id);
+      }}
+      renderInput={(params) => (
+        <TextField {...params} label="Мастер" />
+      )}
+      isOptionEqualToValue={(option, val) => option.id === val.id}
+    />
+  );
+};

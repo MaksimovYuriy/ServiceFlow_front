@@ -1,15 +1,17 @@
 import React, { useState, useCallback } from "react";
 import { Box, Paper, Stack, Typography, Button } from "@mui/material";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { useMasters } from "../../api/hooks/masters/useMasters";
 import { MasterSelect } from "../../components/selects/MasterSelect";
 import { ScheduleTable } from "../../components/tables/ScheduleTable";
 import { CreateScheduleDialog } from "../../components/dialogues/CreateScheduleDialog";
 import { useMasterSchedulesPage } from "../../api/hooks/master_schedules/useMasterSchedulesPage";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const MasterSchedulePage = () => {
   const [selectedMasterId, setSelectedMasterId] = useState<number | "">("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   const { data: mastersData = [] } = useMasters();
   const masters = mastersData.map(m => ({ id: Number(m.id), name: m.full_name }));
@@ -21,16 +23,18 @@ const MasterSchedulePage = () => {
   // ===== Новое: handleCreate принимает payload =====
   const handleCreate = useCallback(
     (payload: { weekday: number; start_time: string; end_time: string }) => {
-      create.mutate(payload, { onSuccess: () => setDialogOpen(false) });
+      create.mutate(payload, {
+        onSuccess: () => {
+          setDialogOpen(false);
+          showSnackbar("Интервал добавлен", "success");
+        },
+      });
     },
     [create]
   );
 
   return (
-    <div>
-      <Navbar />
-
-      <Box sx={{ mt: 8, px: 2 }}>
+    <AdminLayout>
         <Paper sx={{ p: 2, mb: 3 }}>
           <MasterSelect
             value={selectedMasterId}
@@ -40,7 +44,7 @@ const MasterSchedulePage = () => {
         </Paper>
 
         {selectedMasterId ? (
-          <Paper sx={{ maxWidth: "100%", width: "100vw", p: 2 }}>
+          <Paper sx={{ width: "100%", p: 2 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">Расписание мастера</Typography>
               <Button
@@ -66,8 +70,7 @@ const MasterSchedulePage = () => {
           onClose={() => setDialogOpen(false)}
           onSubmit={handleCreate}
         />
-      </Box>
-    </div>
+    </AdminLayout>
   );
 };
 

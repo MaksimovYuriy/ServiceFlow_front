@@ -33,7 +33,7 @@ const CreateUserDialog: FC<CreateUserModalProps> = ({
   onSubmit
 }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Создать пользователя</DialogTitle>
 
       <DialogContent

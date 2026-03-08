@@ -1,7 +1,7 @@
-import { Box, Button, Paper, Toolbar, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import React, { useCallback } from "react";
-import Navbar from "../../components/Navbar";
+import React from "react";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { useClients } from "../../api/hooks/clients/useClients";
 
 const columns: GridColDef[] = [
@@ -13,16 +13,14 @@ const columns: GridColDef[] = [
 
 const ClientDataGrid = React.memo(
   ({ clients, loading }: { clients: any[]; loading: boolean; }) => (
-    <Box sx={{ display: 'flex', flexDirection: 'column', mt: 4 }}>
-      <Paper sx={{ maxWidth: "100%", width: "100vw" }} >
+    <Paper sx={{ width: "100%" }}>
         <DataGrid
           rows={clients}
           columns={columns}
-          onProcessRowUpdateError={(err) => console.error(err)}
+          onProcessRowUpdateError={() => {}}
           sx={{ width: "100%" }}
         />
       </Paper>
-    </Box>
   )
 );
 ClientDataGrid.displayName = 'ClientDataGrid';
@@ -31,17 +29,15 @@ const ClientPage = () => {
   const { data: clients = [], isLoading } = useClients();
 
   return (
-    <div>
-      <Navbar />
-      <Toolbar/>
-      <Typography variant="h4" fontWeight={300} mb={4}>
-        Наши клиенты
-      </Typography>
-      <ClientDataGrid
-        clients={clients}
-        loading={isLoading}
-      />
-    </div>
+    <AdminLayout>
+        <Typography variant="h4" fontWeight={300} mb={4}>
+          Наши клиенты
+        </Typography>
+        <ClientDataGrid
+          clients={clients}
+          loading={isLoading}
+        />
+    </AdminLayout>
   );
 }
 

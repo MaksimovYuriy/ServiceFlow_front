@@ -1,5 +1,5 @@
 import { Box, Button, Paper, IconButton, Stack, TextField } from "@mui/material";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useMaterials } from "../../api/hooks/materials/useMaterial";
@@ -14,6 +14,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAddMaterial } from "../../api/hooks/materials/operations/useAddMaterial";
 import { useSubtractMaterial } from "../../api/hooks/materials/operations/useSubstractMaterial";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 
 const getColumns = (
@@ -112,20 +113,19 @@ const MaterialDataGrid = React.memo(
     materials: Material[];
     loading: boolean;
     columns: GridColDef[];
-    onRowUpdate: any;
+    onRowUpdate: (newRow: Material, oldRow: Material) => Promise<Material>;
   }) => (
-    <Box sx={{ display: "flex", flexDirection: "column", mt: 4 }}>
-      <Paper sx={{ maxWidth: "100%", width: "100vw" }}>
+    <Paper sx={{ width: "100%" }}>
         <DataGrid
           rows={materials}
           columns={columns}
           loading={loading}
           processRowUpdate={onRowUpdate}
+          onProcessRowUpdateError={() => {}}
           disableRowSelectionOnClick
           sx={{ width: "100%" }}
         />
       </Paper>
-    </Box>
   )
 );
 MaterialDataGrid.displayName = "MaterialDataGrid";
@@ -134,9 +134,9 @@ const MaterialPage = () => {
   const { data: materials = [], isLoading } = useMaterials();
   const { mutate: createMaterial } = useCreateMaterial();
   const { mutateAsync: updateMaterialMutate } = useUpdateMaterial();
-
   const { mutate: addMaterial } = useAddMaterial();
   const { mutate: subtractMaterial } = useSubtractMaterial();
+  const { showSnackbar } = useSnackbar();
 
   const [open, setOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
@@ -155,7 +155,9 @@ const MaterialPage = () => {
   };
 
   const handleSubmit = () => {
-    createMaterial(form);
+    createMaterial(form, {
+      onSuccess: () => showSnackbar("Материал создан", "success"),
+    });
     setForm(initialForm);
     setOpen(false);
   };
@@ -174,38 +176,36 @@ const MaterialPage = () => {
   const handleRowUpdate = async (newRow: Material, oldRow: Material) => {
     try {
       await updateMaterialMutate(newRow);
+      showSnackbar("Обновлено", "success");
       return newRow;
-    } catch (error) {
-      console.error("Ошибка обновления:", error);
+    } catch {
       return oldRow;
     }
   };
 
   return (
-    <div>
-      <Navbar />
+    <AdminLayout>
+        <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+          <Button variant="contained" onClick={handleOpen}>
+            Добавить Материал
+          </Button>
+        </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 8 }}>
-        <Button variant="contained" onClick={handleOpen}>
-          Добавить Материал
-        </Button>
-      </Box>
+        <CreateMaterialDialog
+          open={open}
+          form={form}
+          onClose={handleClose}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
 
-      <CreateMaterialDialog
-        open={open}
-        form={form}
-        onClose={handleClose}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
-
-      <MaterialDataGrid
-        materials={materials}
-        loading={isLoading}
-        columns={columns}
-        onRowUpdate={handleRowUpdate}
-      />
-    </div>
+        <MaterialDataGrid
+          materials={materials}
+          loading={isLoading}
+          columns={columns}
+          onRowUpdate={handleRowUpdate}
+        />
+    </AdminLayout>
   );
 };
 

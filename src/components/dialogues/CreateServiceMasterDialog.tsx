@@ -4,13 +4,10 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
-import type { FC, ChangeEvent } from "react";
-import type { CreateServiceMasterForm } from "../../types/serviceMaster";
+import { useState, type FC } from "react";
 
 interface Master {
   id: number;
@@ -19,10 +16,10 @@ interface Master {
 
 interface CreateServiceMasterDialogProps {
   open: boolean;
-  form: CreateServiceMasterForm;
+  form: { master_id: number | "" };
   masters: Master[];
   onClose: () => void;
-  onChange: (e: ChangeEvent<{ name?: string; value: unknown }>) => void;
+  onChange: (e: { target: { name: string; value: unknown } }) => void;
   onSubmit: () => void;
 }
 
@@ -34,27 +31,23 @@ const CreateServiceMasterDialog: FC<CreateServiceMasterDialogProps> = ({
   onChange,
   onSubmit,
 }) => {
+  const selected = masters.find((m) => m.id === form.master_id) ?? null;
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Добавить мастера</DialogTitle>
 
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1, width: "100%" }}>
-        <FormControl fullWidth>
-          <InputLabel>Мастер</InputLabel>
-          <Select
-            label="Мастер"
-            name="master_id"
-            value={form.master_id}
-            onChange={onChange as any}
-            sx={{width: '100%'}}
-          >
-            {masters.map((m) => (
-              <MenuItem key={m.id} value={m.id}>
-                {m.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+        <Autocomplete
+          options={masters}
+          getOptionLabel={(option) => option.name}
+          value={selected}
+          onChange={(_e, newValue) => {
+            onChange({ target: { name: "master_id", value: newValue?.id ?? "" } });
+          }}
+          renderInput={(params) => <TextField {...params} label="Мастер" />}
+          isOptionEqualToValue={(option, val) => option.id === val.id}
+        />
       </DialogContent>
 
       <DialogActions>

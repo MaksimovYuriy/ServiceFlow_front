@@ -1,5 +1,5 @@
 import { Box, Button, Paper } from "@mui/material";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import React, { useCallback, useState } from "react";
 import CreateServiceDialog, { type CreateServiceForm } from "../../components/dialogues/CreateServiceDialog";
@@ -7,6 +7,7 @@ import { useServices } from "../../api/hooks/services/useServices";
 import { useCreateService } from "../../api/hooks/services/useCreateService";
 import { useUpdateService } from "../../api/hooks/services/useUpdateService";
 import type { Service } from "../../api/services";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', flex: 0.5 },
@@ -18,36 +19,25 @@ const columns: GridColDef[] = [
 ];
 
 const ServiceDataGrid = React.memo(
-  ({ services, loading, onRowUpdate }: { services: any[]; loading: boolean; onRowUpdate: any }) => (
-    <Box sx={{ display: 'flex', flexDirection: 'column', mt: 4 }}>
-      <Paper sx={{ maxWidth: "100%", width: "100%" }}>
+  ({ services, loading, onRowUpdate }: { services: Service[]; loading: boolean; onRowUpdate: (newRow: Service, oldRow: Service) => Promise<Service> }) => (
+    <Paper sx={{ width: "100%" }}>
         <DataGrid
           rows={services}
           columns={columns}
           processRowUpdate={onRowUpdate}
-          onProcessRowUpdateError={(err) => console.error(err)}
+          onProcessRowUpdateError={() => {}}
           sx={{ width: "100%" }}
         />
       </Paper>
-    </Box>
   )
 );
 ServiceDataGrid.displayName = 'ServiceDataGrid';
 
 const ServicePage = () => {
   const { data: services = [], isLoading } = useServices();
-  const { mutate: createService, isPending } = useCreateService();
+  const { mutate: createService } = useCreateService();
   const { mutateAsync: updateServiceMutate } = useUpdateService();
-
-  const handleOpen = useCallback(() => setOpen(true), []);
-  const handleClose = useCallback(() => setOpen(false), []);
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value, type, checked } = e.target;
-      setForm(prev => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
-    }, []);
+  const { showSnackbar } = useSnackbar();
 
   const initialForm: CreateServiceForm = {
     title: "",
@@ -60,43 +50,54 @@ const ServicePage = () => {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CreateServiceForm>(initialForm);
 
+  const handleOpen = useCallback(() => setOpen(true), []);
+  const handleClose = useCallback(() => setOpen(false), []);
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value, type, checked } = e.target;
+      setForm(prev => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }, []);
+
   const handleSubmit = useCallback(() => {
-      createService(form);
+      createService(form, {
+        onSuccess: () => showSnackbar("Услуга создана", "success"),
+      });
       setForm(initialForm);
       setOpen(false);
-    }, [form, createService]);
+    }, [form, createService, showSnackbar]);
 
   const handleRowUpdate = async (newRow: Service, oldRow: Service) => {
       try {
         await updateServiceMutate(newRow);
+        showSnackbar("Обновлено", "success");
         return newRow;
-      } catch (error) {
-        console.error("Ошибка обновления:", error);
+      } catch {
         return oldRow;
       }
     };
 
   return (
-    <div>
-      <Navbar />
-      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 8 }}>
-        <Button variant="contained" onClick={handleOpen} >Добавить Услугу</Button>
-      </Box>
+    <AdminLayout>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+          <Button variant="contained" onClick={handleOpen}>Добавить Услугу</Button>
+        </Box>
 
-      <CreateServiceDialog
-        open={open}
-        form={form}
-        onClose={handleClose}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
+        <CreateServiceDialog
+          open={open}
+          form={form}
+          onClose={handleClose}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
 
-      <ServiceDataGrid
-        services={services}
-        loading={isLoading}
-        onRowUpdate={handleRowUpdate}
-      />
-    </div>
+        <ServiceDataGrid
+          services={services}
+          loading={isLoading}
+          onRowUpdate={handleRowUpdate}
+        />
+    </AdminLayout>
   );
 }
 

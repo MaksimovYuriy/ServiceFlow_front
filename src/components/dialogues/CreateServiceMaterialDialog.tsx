@@ -5,10 +5,7 @@ import {
   DialogActions,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
+  Autocomplete,
 } from "@mui/material";
 import type { FC, ChangeEvent } from "react";
 
@@ -39,28 +36,28 @@ const CreateServiceMaterialDialog: FC<CreateServiceMaterialDialogProps> = ({
   onChange,
   onSubmit
 }) => {
+  const selected = materials.find((m) => m.id === form.material_id) ?? null;
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Добавить трату материала</DialogTitle>
 
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
       >
-        <FormControl fullWidth>
-          <InputLabel>Материал</InputLabel>
-          <Select
-            label="Материал"
-            name="material_id"
-            value={form.material_id}
-            onChange={onChange as any}
-          >
-            {materials.map((material) => (
-              <MenuItem key={material.id} value={material.id}>
-                {material.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          options={materials}
+          getOptionLabel={(option) => option.title}
+          value={selected}
+          onChange={(_e, newValue) => {
+            const syntheticEvent = {
+              target: { name: "material_id", value: String(newValue?.id ?? "") },
+            } as ChangeEvent<HTMLInputElement>;
+            onChange(syntheticEvent);
+          }}
+          renderInput={(params) => <TextField {...params} label="Материал" />}
+          isOptionEqualToValue={(option, val) => option.id === val.id}
+        />
 
         <TextField
           label="Количество"

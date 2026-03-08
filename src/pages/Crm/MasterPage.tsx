@@ -1,5 +1,5 @@
-import { Box, Button, Paper, Toolbar } from "@mui/material";
-import Navbar from "../../components/Navbar";
+import { Box, Button, Paper } from "@mui/material";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import React, { useCallback, useState } from "react";
 import { useCreateMaster } from "../../api/hooks/masters/useCreateMaster";
@@ -8,6 +8,7 @@ import type { CreateMasterForm } from "../../components/dialogues/CreateMasterDi
 import CreateMasterDialog from "../../components/dialogues/CreateMasterDialog";
 import { useUpdateMaster } from "../../api/hooks/masters/useUpdateMaster";
 import { useMasters } from "../../api/hooks/masters/useMasters";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', flex: 0.5 },
@@ -20,26 +21,25 @@ const columns: GridColDef[] = [
 ];
 
 const MasterDataGrid = React.memo(
-  ({ masters, loading, onRowUpdate }: { masters: any[]; loading: boolean; onRowUpdate: any }) => (
-    <Box sx={{ display: 'flex', flexDirection: 'column', mt: 4 }}>
-      <Paper sx={{ maxWidth: "100%", width: "100vw" }} >
+  ({ masters, loading, onRowUpdate }: { masters: Master[]; loading: boolean; onRowUpdate: (newRow: Master, oldRow: Master) => Promise<Master> }) => (
+    <Paper sx={{ width: "100%" }}>
         <DataGrid
           rows={masters}
           columns={columns}
           processRowUpdate={onRowUpdate}
-          onProcessRowUpdateError={(err) => console.error(err)}
+          onProcessRowUpdateError={() => {}}
           sx={{ width: "100%" }}
         />
       </Paper>
-    </Box>
   )
 );
 MasterDataGrid.displayName = 'MasterDataGrid';
 
 const MasterPage = () => {
   const { data: masters = [], isLoading } = useMasters();
-  const { mutate: createMaster, isPending } = useCreateMaster();
+  const { mutate: createMaster } = useCreateMaster();
   const { mutateAsync: updateMasterMutate } = useUpdateMaster();
+  const { showSnackbar } = useSnackbar();
 
   const handleOpen = useCallback(() => setOpen(true), []);
   const handleClose = useCallback(() => setOpen(false), []);
@@ -64,42 +64,43 @@ const MasterPage = () => {
   const [form, setForm] = useState<CreateMasterForm>(initialForm);
 
   const handleSubmit = useCallback(() => {
-      createMaster(form);
+      createMaster(form, {
+        onSuccess: () => showSnackbar("Мастер создан", "success"),
+      });
       setForm(initialForm);
       setOpen(false);
-    }, [form, createMaster]);
+    }, [form, createMaster, showSnackbar]);
 
   const handleRowUpdate = async (newRow: Master, oldRow: Master) => {
       try {
         await updateMasterMutate(newRow);
+        showSnackbar("Обновлено", "success");
         return newRow;
-      } catch (error) {
-        console.error("Ошибка обновления:", error);
+      } catch {
         return oldRow;
       }
     };
 
   return (
-    <div>
-      <Navbar />
-      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 8 }}>
-        <Button variant="contained" onClick={handleOpen} >Добавить Мастера</Button>
-      </Box>
+    <AdminLayout>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+          <Button variant="contained" onClick={handleOpen}>Добавить Мастера</Button>
+        </Box>
 
-      <CreateMasterDialog
-        open={open}
-        form={form}
-        onClose={handleClose}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
+        <CreateMasterDialog
+          open={open}
+          form={form}
+          onClose={handleClose}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
 
-      <MasterDataGrid
-        masters={masters}
-        loading={isLoading}
-        onRowUpdate={handleRowUpdate}
-      />
-    </div>
+        <MasterDataGrid
+          masters={masters}
+          loading={isLoading}
+          onRowUpdate={handleRowUpdate}
+        />
+    </AdminLayout>
   );
 }
 

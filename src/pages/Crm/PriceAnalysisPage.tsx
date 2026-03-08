@@ -9,11 +9,12 @@ import {
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import Navbar from "../../components/Navbar";
+import { AdminLayout } from "../../components/layouts/AdminLayout";
 import { useStartAnalysis } from "../../api/hooks/price_analysis/useStartAnalysis";
 import { usePredictions } from "../../api/hooks/price_analysis/usePredictions";
 import { useApplyPrice } from "../../api/hooks/price_analysis/useApplyPrice";
 import type { Prediction } from "../../api/price_analysis";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const formatPrice = (value: number) =>
   value.toLocaleString("ru-RU", { maximumFractionDigits: 0 }) + " \u20BD";
@@ -25,6 +26,7 @@ const PriceAnalysisPage = () => {
   const [applyingAll, setApplyingAll] = useState(false);
   const pollingTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  const { showSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
   const { mutate: startAnalysis, isPending: isStarting } = useStartAnalysis();
   const { data: predictions, isError } = usePredictions(polling);
@@ -60,6 +62,7 @@ const PriceAnalysisPage = () => {
     async (serviceId: number, price: number) => {
       await applyPrice({ serviceId, price });
       setAppliedIds((prev) => new Set(prev).add(serviceId));
+      showSnackbar("Цена применена", "success");
     },
     [applyPrice]
   );
@@ -154,10 +157,8 @@ const PriceAnalysisPage = () => {
   const isAnalyzing = analyzing && !hasResults;
 
   return (
-    <div>
-      <Navbar />
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "center", mt: 8 }}>
+    <AdminLayout>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
         <Button
           variant="contained"
           onClick={handleStartAnalysis}
@@ -190,7 +191,7 @@ const PriceAnalysisPage = () => {
 
       {hasResults && (
         <Box sx={{ display: "flex", flexDirection: "column", mt: 4 }}>
-          <Paper sx={{ maxWidth: "100%", width: "100vw" }}>
+          <Paper sx={{ width: "100%" }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -209,7 +210,7 @@ const PriceAnalysisPage = () => {
           </Paper>
         </Box>
       )}
-    </div>
+    </AdminLayout>
   );
 };
 
