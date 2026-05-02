@@ -1,7 +1,6 @@
-import { useNavigate, type NavigateFunction } from "react-router-dom";
+import { type NavigateFunction } from "react-router-dom";
 import { api } from "./middlewares/axios";
-import type { JsonApiResource, JsonApiResponse } from "./middlewares/jsonapi";
-import { QueryClient } from "@tanstack/react-query";
+import type { JsonApiResponse } from "./middlewares/jsonapi";
 
 export interface LoginAttributes {
   email: string;
@@ -9,7 +8,7 @@ export interface LoginAttributes {
 }
 
 export interface LoginResponseAttributes {
-  token: string;
+  message: string;
 }
 
 export function loginRequest(payload: LoginAttributes) {
@@ -21,8 +20,11 @@ export function loginRequest(payload: LoginAttributes) {
   });
 }
 
-export function logout(navigate: NavigateFunction) {
-  sessionStorage.removeItem("token");
-  sessionStorage.clear();
-  navigate('/login')
+export async function logout(navigate: NavigateFunction) {
+  try {
+    await api.delete("/auth/sign_out");
+  } catch {
+    // даже при ошибке делаем редирект, чтобы пользователь не залип
+  }
+  navigate("/login");
 }

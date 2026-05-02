@@ -17,9 +17,7 @@ export function LoginPage() {
     loginMutation.mutate(
       { email, password },
       {
-        onSuccess: (response) => {
-          const { token } = response.data.attributes;
-          sessionStorage.setItem("token", token);
+        onSuccess: () => {
           navigate("/admin/dashboard");
         },
       }
