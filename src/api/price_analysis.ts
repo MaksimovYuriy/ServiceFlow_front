@@ -2,7 +2,19 @@ import { api } from "./middlewares/axios";
 
 /* ===== TYPES ===== */
 
-export interface Prediction {
+export type RunStatus = "queued" | "running" | "completed" | "failed";
+
+export interface RunMeta {
+  id: number;
+  status: RunStatus;
+  started_at: string | null;
+  finished_at: string | null;
+  duration_sec: number | null;
+  error_message: string | null;
+  created_at: string;
+}
+
+export interface PricePrediction {
   service_id: number;
   service_title: string;
   current_price: number;
@@ -12,24 +24,65 @@ export interface Prediction {
   is_active: number;
 }
 
-export interface PredictionsResponse {
-  predictions: Prediction[];
+export interface PriceMetrics {
+  test_mae: number;
+  test_mse: number;
+  test_wmape: number;
+  baseline_mae: number;
+  baseline_mse: number;
+  baseline_wmape: number;
+  mae_improvement_pct: number;
+  train_rows: number;
+  val_rows: number;
+  test_rows: number;
+  best_val_loss: number;
+}
+
+export interface PriceResults {
+  run: RunMeta;
+  predictions: PricePrediction[];
+  metrics: PriceMetrics;
+}
+
+export interface RunsHistory {
+  runs: RunMeta[];
+}
+
+export interface AnalysisInProgressError {
+  error: "analysis_in_progress";
+  run: RunMeta;
 }
 
 /* ===== START ANALYSIS ===== */
 
-export function startAnalysis() {
+export function startPriceAnalysis() {
   return api
-    .post<{ status: string }>("/api/price_analysis")
+    .post<RunMeta>("/api/price_analysis")
     .then((response) => response.data);
 }
 
-/* ===== GET PREDICTIONS ===== */
+/* ===== GET RESULTS ===== */
 
-export function fetchPredictions() {
+export function fetchPriceResults() {
   return api
-    .get<PredictionsResponse>("/api/price_analysis")
-    .then((response) => response.data.predictions);
+    .get<PriceResults>("/api/price_analysis")
+    .then((response) => response.data);
+}
+
+/* ===== GET LATEST RUN ===== */
+
+export function fetchLatestPriceRun() {
+  return api
+    .get<RunMeta | null>("/api/price_analysis/runs/latest")
+    .then((response) => response.data);
+}
+
+/* ===== GET RUNS HISTORY ===== */
+
+export function fetchPriceRunsHistory() {
+  return api
+    .get<RunsHistory>("/api/price_analysis/runs")
+    .then((response) => response.data);
 }
 
 /* ===== APPLY PRICE ===== */

@@ -7,7 +7,8 @@ export function QueryProvider({ children }: { children: ReactNode }) {
 
   const [queryClient] = useState(() => new QueryClient({
     mutationCache: new MutationCache({
-      onError: (error) => {
+      onError: (error, _vars, _ctx, mutation) => {
+        if (mutation.meta?.skipGlobalErrorHandler) return;
         const axiosErr = error as { response?: { data?: { error?: string } } };
         const message = axiosErr.response?.data?.error ?? "Произошла ошибка";
         showSnackbar(message, "error");
