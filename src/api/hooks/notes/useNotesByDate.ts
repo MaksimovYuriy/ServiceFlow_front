@@ -8,6 +8,7 @@ export function useNotesByDate(date: string | null) {
       if (!date) {
         return Promise.resolve([]); // если дата не выбрана, возвращаем пустой массив
       }
+      
       return fetchNotesByDate(date);
     },
     enabled: !!date, // запрос выполняется только если дата задана
